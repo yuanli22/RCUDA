@@ -90,7 +90,7 @@ static void _finalizer(SEXP ext)
 	if (!R_ExternalPtrAddr(ext))
 		return;
        double * ptr= (double *) R_ExternalPtrAddr(ext);
-	Rprintf("finalizer invoked once \n");
+//	Rprintf("finalizer invoked once \n");
 	cudacall(cudaFree(ptr));
 	R_ClearExternalPtr(ext);
 }

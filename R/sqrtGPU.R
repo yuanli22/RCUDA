@@ -23,10 +23,8 @@ sqrtGPU <- function (input)
 { 
 
     checkGPU(input)
-    createGPU(1:as.integer(input[2])*as.integer(input[3]))->c
     ext<-.Call("vector_sqrt", 
                 input$ptr,
-                c$ptr,
                 as.integer(input[2])*as.integer(input[3]),
                 PACKAGE= "supplement"
 

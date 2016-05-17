@@ -21,13 +21,11 @@
 #' gatherGPU(b_gpu)
 
 
-powerGPU <- function (input, alpha) 
+powerGPU <- function (input, alpha=1) 
 {
     checkGPU(input)
-    createGPU(1:as.integer(input[2])*as.integer(input[3]))->c
     ext<-.Call("vector_power", 
                 input$ptr,
-                c$ptr,
                 as.integer(input[2])*as.integer(input[3]),
                 as.numeric(alpha),
                 PACKAGE= "supplement"

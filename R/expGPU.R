@@ -22,11 +22,9 @@
 
 expGPU <- function (input) 
 { 
-    checkGPU(input)
-    createGPU(1:as.integer(input[2])*as.integer(input[3]))->c
+    checkGPU(input)   
     ext<-.Call("vector_exp", 
                 input$ptr,
-                c$ptr,
                 as.integer(input[2])*as.integer(input[3]),
                 PACKAGE= "supplement"
 

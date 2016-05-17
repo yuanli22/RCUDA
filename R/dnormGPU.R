@@ -22,16 +22,14 @@
 dnormGPU<-function(input, mean=0, sd=1)
 {
     checkGPU(input)
-    createGPU(1:as.integer(input[2])*as.integer(input[3]))->c
     ext<-.Call(
                 "cudanormaldensity",
-                input$ptr, 
-		  c$ptr,            
+                input$ptr,            
                 as.integer(input[2])*as.integer(input[3]),
                 as.numeric(mean),
                 as.numeric(sd),
                 PACKAGE= "supplement"
               )
-     ext<-GPUobject(ext, as.integer(input[2]),as.integer(input[3]))
+    ext<-GPUobject(ext, as.integer(input[2]),as.integer(input[3]))
     return(ext)
 }

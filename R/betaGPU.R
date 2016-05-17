@@ -24,11 +24,9 @@ betaGPU <- function (input1, input2)
     checkGPU(input2)
     if (as.integer(input1[2])*as.integer(input1[3])!=as.integer(input2[2])*as.integer(input2[3]))
     stop ("vectors dimension don't match")
-    createGPU(1:as.integer(input1[2])*as.integer(input1[3]))->c
     ext<-.Call("vector_beta", 
                 input1$ptr,
                 input2$ptr,
-                c$ptr,
                 as.integer(input1[2])*as.integer(input1[3]),
                 PACKAGE= "supplement"
 
