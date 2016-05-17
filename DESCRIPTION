@@ -1,0 +1,16 @@
+Package: Rcublas
+Type: Package
+Title: GPU Enabled BLAS Functions and Random Number Generators
+Version: 0.1
+Date: 2016-1-07
+Author: Yuan Li, Hua Zhou
+Maintainer: Yuan Li <yli16@ncsu.edu>
+Description: Provides GPU-accelerated algebra and random numbergenerator functions by wrapping CUDA library. It also includes some self-defined GPU algebra functions which are unavailable from CUDA library. 
+License: CPL-2
+Depends: R (>= 3.0.0)
+NeedsCompilation: yes
+SystemRequirements: Nvidia's CUDA toolkit (>= release 5.5); Linux
+        operating system; GNU make.
+URL: https://github.ncsu.edu/yli16/R_CUBLAS
+RoxygenNote: 5.0.1
+Packaged: 2016-05-14 15:51:23 UTC; yli16
