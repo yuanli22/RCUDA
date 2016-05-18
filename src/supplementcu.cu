@@ -178,6 +178,14 @@ __global__  void cudareduction(double * input, double * output, int len)
 	}
 }
 
+// the CUDA kernel for vector subset copying
+__global__ void vectorsubset(double *a, double *out, int n, int *index)
+{
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < n) {
+		out[idx] = a[index[idx]];
+	}
+}
 
 
 
@@ -264,7 +272,11 @@ extern "C"  void cudavariance(double *a, double *c, int n, double mean)
 	return;
 }
 
-
+extern "C"  void vector_subset (double *a, double *c, int n, int *index)
+{
+	vectorsubset<<<(n+M-1)/M,M>>>(a, c, n, index);
+	return;
+}
 
 
 extern "C" double cuda_reduction (double *a, int n)

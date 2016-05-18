@@ -204,6 +204,25 @@ SEXP cudavarGPU (SEXP ina,SEXP N, SEXP m)
 } 
 
 
+//vector subset
+extern void vector_subset (double *a, double *c, int n, int *index);
+SEXP subsetGPU (SEXP ina, SEXP N, SEXP sub) 
+{
+	int *n=INTEGER(N);
+	int *index=INTEGER(sub);
+	double *x;
+	cudaMalloc((void**)&x, *n * sizeof(double));
+	//protect the R external pointer from finalizer
+	SEXP inc = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
+	R_RegisterCFinalizerEx(inc, _finalizer, TRUE);
+       UNPROTECT(1);
+	vector_subset (R_ExternalPtrAddr(ina), R_ExternalPtrAddr(inc), 
+       	*n, index);
+	return(inc);
+} 
+
+
+
 
 //vector reduction sum
 extern double cuda_reduction (double *,int);
