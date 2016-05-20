@@ -22,17 +22,28 @@
 #' a_gpu <- createGPU(a)
 #' gatherGPU(a_gpu) 
 
-createGPU<-function(input)
+createGPU<-function(input, row=NULL, col=NULL)
 {
 
     n<-length(input)
+    if (!is.null(row)&!is.null(col))
+  {
+    if (n!=(as.integer(row)*as.integer(col)))
+    stop ("dimension does not match")
+  }
     ext<-.Call(
                 "createGPU",
                 as.numeric(input),             
                 as.integer(n)
-)
+       )
+    if(is.null(row)|is.null(col))
+    {ext <- GPUobject(ext, n ,1)}
+    else 
+    {
+    if ((length(row)!=1)| length(col)!=1)
+    stop ("dimension need to be scalar")
+    ext <- GPUobject(ext, as.integer(row) , as.integer(col))}
 
-    ext <- GPUobject(ext, n ,1)
     return(ext)
 }
 

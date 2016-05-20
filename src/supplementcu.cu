@@ -183,7 +183,7 @@ __global__ void vectorsubset(double *a, double *out, int n, int *index)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < n) {
-		out[idx] = a[index[idx]];
+		out[idx] = a[index[idx]-1];
 	}
 }
 

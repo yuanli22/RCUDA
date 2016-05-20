@@ -24,11 +24,16 @@
 subsetGPU <- function (input, index) 
 { 
     checkGPU(input)
-    n <- length(index)   
+    n <- length(index) 
+    index <- as.integer(index)
+
+    if ((as.integer(input[2])*as.integer(input[3])<max(index))|(min(index)<1))
+    stop ("index out of bound")
+
     ext <- .Call("subset_GPU", 
                 input$ptr,
                 as.integer(n),
-                index,
+                as.integer(index),
                 PACKAGE= "supplement"
 
                )
