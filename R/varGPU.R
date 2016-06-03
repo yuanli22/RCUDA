@@ -17,12 +17,10 @@ varGPU<-function(x)
 {
  checkGPU(x) 
  n <- as.integer(x[2])*as.integer(x[3])
- c <- createGPU(1:n)
  mean <- sumGPU(x)/n
  ext <- .Call(
                 "cudavarGPU",
                 x$ptr, 
-                c$ptr,
                 n,
                 as.numeric(mean),
                 PACKAGE= "supplement" 
