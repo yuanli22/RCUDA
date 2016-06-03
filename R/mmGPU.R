@@ -1,4 +1,3 @@
-
 #' mmGPU
 #'
 #' This function computes the matrix-matrix multiplication (X * Y) 

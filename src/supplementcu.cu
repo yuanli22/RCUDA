@@ -188,8 +188,6 @@ __global__ void vectorsubset(double *a, double *out, int n, int *index)
 }
 
 
-
-
 extern "C"  void cuda_sum (double *a, double *b, double *c, int n)
 {
 	sum<<<(n+M-1)/M,M>>>(a, b, c, n);
