@@ -27,29 +27,25 @@
 #' a_gpu <- creategpu(a, 2, 3)
 #' gathergpu(a_gpu) 
 
-creategpu <- function(input, nrow=NULL, ncol=NULL)
+creategpu <- function(input, nrow = NULL, ncol = NULL)
 {
     n <- length(input)
-    if (!is.null(nrow) & !is.null(ncol))
-  {
-    if (n != (as.integer(nrow) * as.integer(ncol)))
-        stop ("dimension does not match")
-  }
+    if (!is.null(nrow) && !is.null(ncol)) { 
+    	if (n != (as.integer(nrow) * as.integer(ncol)))
+           stop ("dimension does not match")
+    }
     ext <- .Call(
                 "createGPU",
                 as.numeric(input),             
                 as.integer(n)
-       )
-    if (is.null(nrow) | is.null(ncol))
-  {
-    ext <- GPUobject(ext, n ,1)
-  }
-    else 
-  {  
-    if ((length(nrow) != 1) | length(ncol) != 1)
-    stop ("dimension need to be scalar")
+                )
+    if (is.null(nrow) || is.null(ncol)) {
+    	ext <- GPUobject(ext, n ,1)
+    } else {  
+      if ((length(nrow) != 1) || length(ncol) != 1)
+         stop ("dimension need to be scalar")
     ext <- GPUobject(ext, as.integer(nrow), as.integer(ncol))
-  }
+    }
     return(ext)
 }
 
@@ -70,7 +66,7 @@ creategpu <- function(input, nrow=NULL, ncol=NULL)
 #' @export
 #' @examples
 #' a <- 1:6
-#' am_gpu <- createGPUmat(a, 3, 2)
+#' am_gpu <- creategpu(a, 3, 2)
 #' gathergpu(am_gpu) 
 
 gathergpu <- function(input)

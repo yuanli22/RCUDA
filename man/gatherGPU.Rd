@@ -27,7 +27,7 @@ output is R vector and can be used by any R functions
 }
 \examples{
 a <- 1:6
-am_gpu <- createGPUmat(a, 3, 2)
+am_gpu <- creategpu(a, 3, 2)
 gathergpu(am_gpu) 
 }
 \author{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Lapack.R
 \name{tGPU}
 \alias{tGPU}
-\title{tGPU}
+\title{tgpu}
 \usage{
 tGPU(X)
 }
@@ -13,8 +13,8 @@ tGPU(X)
 matrix transpose, a list consisting of
 \itemize{
 \item{ptr: }{GPU pointer}
-\item{m: }{matrix X's number of rows}
-\item{n: }{matrix X's number of columns}
+\item{m: }{number of rows}
+\item{n: }{number of columns}
 }
 }
 \description{
@@ -23,11 +23,11 @@ by using CUDA cublas cublasDgeam
 }
 \examples{
 a <- 1:12
-a_gpu <- createGPUmat(a,3,4)
-tGPU(a_gpu)->c_gpu
-gatherGPU(c_gpu)
+a_gpu <- creategpu(a, 3, 4)
+tgpu(a_gpu) -> c_gpu
+gathergpu(c_gpu)
 }
 \seealso{
-\code{\link{createGPUmat}}
+\code{\link{creategpu}}
 }
 

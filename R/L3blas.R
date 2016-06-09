@@ -1,4 +1,4 @@
-#' mmGPU
+#' mmgpu
 #'
 #' This function computes the matrix-matrix multiplication (X * Y) 
 #' by using CUDA cublas function cublasDgemm
@@ -10,33 +10,30 @@
 #' \item{m: }{matrix X's number of rows}
 #' \item{n: }{matrix Y's number of columns}
 #' }
-#' @seealso \code{\link{mmGPU}} \code{\link{createGPUmat}} 
+#' @seealso \code{\link{mmgpu}}  
 #' @export
 #' @examples
 #' a <- 1:6
 #' b <- 2:7
-#' a_gpu <- createGPUmat(a,2,3)
-#' b_gpu <- createGPUmat(b,3,2)
-#' mmGPU(a_gpu, b_gpu)->c_gpu
-#' gatherGPU(c_gpu)
+#' a_gpu <- creategpu(a, 2, 3)
+#' b_gpu <- creategpu(b, 3, 2)
+#' mmgpu(a_gpu, b_gpu) -> c_gpu
+#' gathergpu(c_gpu)
 
-
-
-mmGPU <- function(X, Y)
+mmgpu <- function(X, Y)
 {
   checkGPU(X)
   checkGPU(Y)
-  if (as.integer(X[3])!=as.integer(Y[2]))
-  stop ("dimension doesn't match")
+  if (as.integer(X[3]) != as.integer(Y[2]))
+    stop ("dimension doesn't match")
   ext <- .Call(
-              "mmGPU",
-               X$ptr,
-               Y$ptr,
-               as.integer(X[2]),
-               as.integer(Y[3]),
-               as.integer(X[3])            
-            )
-   ext<-GPUobject(ext, as.integer(X[2]),as.integer(Y[3]))
-   gc()
+                "mmGPU",
+                 X$ptr,
+                 Y$ptr,
+                 as.integer(X[2]),
+                 as.integer(Y[3]),
+                 as.integer(X[3])            
+              )
+   ext <- GPUobject(ext, as.integer(X[2]), as.integer(Y[3]))
    return(ext)
 }

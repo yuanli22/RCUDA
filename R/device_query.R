@@ -1,16 +1,15 @@
-#' gpuQuery
+#' gpuquery
 #'
 #' This function returns the information of available GPU device in system
 #' @seealso \code{\link{creategpu}} 
 #' @export
 #' @examples
-#' gpuQuery()
+#' gpuquery()
 
-
-gpuQuery<-function()
+gpuquery <- function()
 {
-    ext<-.Call(
+    ext <- .Call(
                 "devicequery",
-		  PACKAGE= "supplement"
+		  PACKAGE = "supplement"
               )
 }

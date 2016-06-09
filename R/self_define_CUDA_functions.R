@@ -1,152 +1,176 @@
-#' divideGPU
+#' dividegpu
 #'
-#' This function computes the element-wise division of two given vectors or matrices (x / y)
-#' by using CUDA function
+#' This function computes the element-wise division of two given 
+#' vectors/matrices by using self-defined CUDA function
 #' @param x list consisting of R external GPU pointer and dimension 
 #' @param y list consisting of R external GPU pointer and dimension
-#' @return element-wise division of vectors or matrices (x / y), a list consisting of
+#' @return element-wise division of vectors/matrices (x / y),
+#' a list consisting of
 #' \itemize{
 #' \item{ptr: }{GPU pointer}
 #' \item{m: }{number of rows}
 #' \item{n: }{number of columns}
 #' }
-#' @seealso \code{\link{multiplyGPU}} 
+#' @seealso \code{\link{multiplygpu}} 
 #' @export
 #' @examples
 #' a <- 1:4
 #' b <- 2:5
-#' a_gpu <- createGPU(a)
-#' b_gpu <- createGPU(b)
-#' divideGPU(a_gpu, b_gpu)->c_gpu
-#' gatherGPU(c_gpu)
+#' a_gpu <- creategpu(a)
+#' b_gpu <- creategpu(b)
+#' dividegpu(a_gpu, b_gpu) -> c_gpu
+#' gathergpu(c_gpu)
 
-
-divideGPU <- function (x, y) 
+dividegpu <- function (x, y) 
 { 
-
   checkGPU(x)
   checkGPU(y)
-  if (as.integer(x[2])*as.integer(x[3])!=as.integer(y[2])*as.integer(y[3]))
-  stop ("vectors dimension don't match")
-    ext<-.Call("vector_divide", 
+  if (as.integer(x[2]) * as.integer(x[3]) 
+      != as.integer(y[2]) * as.integer(y[3]))
+    stop ("vectors dimension don't match")
+  ext <- .Call(
+                "vector_divide", 
                 x$ptr,
                 y$ptr, 
-                as.integer(x[2])*as.integer(x[3]),
-                PACKAGE= "supplement"
-
+                as.integer(x[2]) * as.integer(x[3]),
+                PACKAGE = "supplement"
                )
-  if (as.integer(x[3])!=1)
-    {ext<-GPUobject(ext, as.integer(x[2]),as.integer(x[3]))}
-  else
-    {ext<-GPUobject(ext, as.integer(y[2]),as.integer(y[3]))}
-    return(ext)
+  if (as.integer(x[3]) != 1){
+    ext <- GPUobject(ext, as.integer(x[2]), as.integer(x[3]))
+  } else {
+    ext<-GPUobject(ext, as.integer(y[2]), as.integer(y[3]))
   }
-
-
-
-#' sumGPU
-#'
-#' Compute the sum of given vector  
-#' 
-#' This function computes sum of given vector by using CUDA vector reduction
-#' @param x list consisting of R external GPU pointer and dimension 
-#' @return vector sum
-#' @author Yuan Li        
-#' @keywords GPU 
-#' @seealso \code{\link{gatherGPU}} \code{\link{createGPU}} 
-#' @export
-#' @examples
-#' a <- createGPU(1:4)
-#' sumGPU(a)
-
-sumGPU<-function(x)
-{
- checkGPU(x) 
- ext<-.Call(
-                "vector_reduction",
-                x$ptr,      
-                as.integer(x[2])*as.integer(x[3]),
-                PACKAGE= "supplement" 
-              )
- 
-    return(ext)
-
+  return(ext)
 }
 
 
-#' varGPU
+#' sumgpu
 #'
-#' Compute the variance of given sample  
+#' Compute the summation of given vector/matrix  
 #' 
-#' This function computes variance of given sample by using CUDA vector reduction
+#' This function computes the summation of given vector/matrix 
+#' by using self-defined CUDA function
 #' @param x list consisting of R external GPU pointer and dimension 
-#' @return sample variance
+#' @return vector/matrix summation
 #' @author Yuan Li        
 #' @keywords GPU 
-#' @seealso \code{\link{sumGPU}}
+#' @seealso \code{\link{meangpu}}  
 #' @export
 #' @examples
-#' a <- createGPU(1:4)
-#' varGPU(a)
+#' a <- creategpu(1:4)
+#' sumgpu(a)
 
-varGPU<-function(x)
+sumgpu <- function(x)
 {
  checkGPU(x) 
- n <- as.integer(x[2])*as.integer(x[3])
- mean <- sumGPU(x)/n
+ ext <- .Call(
+                "vector_reduction",
+                x$ptr,      
+                as.integer(x[2]) * as.integer(x[3]),
+                PACKAGE = "supplement" 
+              )
+ return(ext)
+}
+
+
+#' meangpu
+#'
+#' Compute the mean of given vector/matrix  
+#' 
+#' This function computes the mean of given vector/matrix 
+#' by using self-defined CUDA function
+#' @param x list consisting of R external GPU pointer and dimension 
+#' @return vector/matrix mean
+#' @author Yuan Li        
+#' @keywords GPU 
+#' @seealso \code{\link{sumgpu}}  
+#' @export
+#' @examples
+#' a <- creategpu(1:4)
+#' meangpu(a)
+
+meangpu <- function(x)
+{
+ checkGPU(x) 
+ ext <- .Call(
+                "vector_reduction",
+                x$ptr,      
+                as.integer(x[2]) * as.integer(x[3]),
+                PACKAGE = "supplement" 
+              )
+ return(ext / (as.integer(x[2]) * as.integer(x[3])))
+}
+
+
+#' vargpu
+#'
+#' Compute the variance of given vector/matrix  
+#' 
+#' This function computes the variance of given vector/matrix 
+#' by using self-defined CUDA function
+#' @param x list consisting of R external GPU pointer and dimension 
+#' @return vector/matrix variance
+#' @author Yuan Li        
+#' @keywords CUDA reduction 
+#' @seealso \code{\link{sumgpu}}
+#' @export
+#' @examples
+#' a <- creategpu(1:4)
+#' vargpu(a)
+
+vargpu <- function(x)
+{
+ checkGPU(x) 
+ n <- as.integer(x[2]) * as.integer(x[3])
+ mean <- sumgpu(x) / n
  ext <- .Call(
                 "cudavarGPU",
                 x$ptr, 
                 n,
                 as.numeric(mean),
-                PACKAGE= "supplement" 
+                PACKAGE = "supplement" 
               )
- ext<-GPUobject(ext, as.integer(x[2]),as.integer(x[3]))
- result <- sumGPU(ext)/(n-1) 
+ ext <- GPUobject(ext, as.integer(x[2]), as.integer(x[3]))
+ result <- sumgpu(ext) / (n-1) 
  return(result)
-
 }
 
 
-
-#' subsetGPU
+#' subsetgpu
 #'
-#' This function select and copy subset of a given GPU vector
-#' by using CUDA function
+#' This function returns the specified subset of given GPU vector/matrix
+#' by using self-defined CUDA function
 #' @param input list consisting of R external GPU pointer and dimension
-#' @param index index of the vector subset 
-#' @return subset of vector, a list consisting of
+#' @param index index of the vector/matrix subset 
+#' @return subset of the given vector/matrix, a list consisting of
 #' \itemize{
 #' \item{ptr: }{GPU pointer}
 #' \item{m: }{number of rows}
 #' \item{n: }{number of columns}
 #' }
-#' @seealso \code{\link{createGPU}} 
+#' @seealso \code{\link{creategpu}} 
 #' @export
 #' @examples
 #' a <- 1:4
-#' a_gpu <- createGPU(a)
-#' subsetGPU(a_gpu,c(1,2))->b_gpu
-#' gatherGPU(b_gpu)
+#' a_gpu <- creategpu(a)
+#' subsetgpu(a_gpu,c(1, 2))->b_gpu
+#' gathergpu(b_gpu)
 
-
-
-subsetGPU <- function (input, index) 
+subsetgpu <- function (input, index) 
 { 
     checkGPU(input)
     n <- length(index) 
     index <- as.integer(index)
-
-    if ((as.integer(input[2])*as.integer(input[3])<max(index))|(min(index)<1))
-    stop ("index out of bound")
-
-    ext <- .Call("subset_GPU", 
-                input$ptr,
-                as.integer(n),
-                as.integer(index),
-                PACKAGE= "supplement"
-
-               )
-    ext<-GPUobject(ext, as.integer(n),1)
+    if ((as.integer(input[2]) * as.integer(input[3])
+         < max(index)) | (min(index) < 1))
+    	stop ("index out of bound")
+    ext <- .Call(
+                  "subset_GPU", 
+                  input$ptr,
+                  as.integer(n),
+                  as.integer(index),
+                  PACKAGE = "supplement"
+                 )
+    ext <- GPUobject(ext, as.integer(n), 1)
     return(ext)
   }

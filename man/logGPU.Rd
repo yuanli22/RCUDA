@@ -2,7 +2,7 @@
 % Please edit documentation in R/element_wise_math.R
 \name{logGPU}
 \alias{logGPU}
-\title{logGPU}
+\title{loggpu}
 \usage{
 logGPU(input)
 }
@@ -10,7 +10,7 @@ logGPU(input)
 \item{input}{list consisting of R external GPU pointer and dimension}
 }
 \value{
-natural logarithms vector, a list consisting of
+natural logarithms of vector/matrix, a list consisting of
 \itemize{
 \item{ptr: }{GPU pointer}
 \item{m: }{number of rows}
@@ -18,16 +18,16 @@ natural logarithms vector, a list consisting of
 }
 }
 \description{
-This function computes the natural logarithms of given vector or matrix
-by using CUDA function
+This function computes the natural logarithms of given vector/matrix
+by using self-defined CUDA function
 }
 \examples{
 a <- 1:4
-a_gpu <- createGPU(a)
-logGPU(a_gpu)->b_gpu
+a_gpu <- creategpu(a)
+logGPU(a_gpu) -> b_gpu
 gatherGPU(b_gpu)
 }
 \seealso{
-\code{\link{expGPU}}
+\code{\link{expgpu}}
 }
 

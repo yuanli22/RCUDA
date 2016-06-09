@@ -2,7 +2,7 @@
 % Please edit documentation in R/element_wise_math.R
 \name{powerGPU}
 \alias{powerGPU}
-\title{powerGPU}
+\title{powergpu}
 \usage{
 powerGPU(input, alpha = 1)
 }
@@ -12,7 +12,7 @@ powerGPU(input, alpha = 1)
 \item{alpha}{power factor}
 }
 \value{
-powered vector, a list consisting of
+powered vector/matrix, a list consisting of
 \itemize{
 \item{ptr: }{GPU pointer}
 \item{m: }{number of rows}
@@ -20,17 +20,17 @@ powered vector, a list consisting of
 }
 }
 \description{
-This function computes the power of given vector or matrix 
-by using CUDA function
+This function computes the power of given vector/matrix 
+by using self-defined CUDA function
 }
 \examples{
 a <- 1:4
 b <- 2
-a_gpu <- createGPU(a)
-powerGPU(a_gpu, b)->b_gpu
-gatherGPU(b_gpu)
+a_gpu <- creategpu(a)
+powergpu(a_gpu, b) -> b_gpu
+gathergpu(b_gpu)
 }
 \seealso{
-\code{\link{sqrtGPU}}
+\code{\link{sqrtgpu}}
 }
 

@@ -1,5 +1,4 @@
-
-#' tGPU
+#' tgpu
 #'
 #' This function transposes the given matrix 
 #' by using CUDA cublas cublasDgeam
@@ -7,69 +6,61 @@
 #' @return matrix transpose, a list consisting of
 #' \itemize{
 #' \item{ptr: }{GPU pointer}
-#' \item{m: }{matrix X's number of rows}
-#' \item{n: }{matrix X's number of columns}
+#' \item{m: }{number of rows}
+#' \item{n: }{number of columns}
 #' }
-#' @seealso  \code{\link{createGPUmat}} 
+#' @seealso  \code{\link{creategpu}} 
 #' @export
 #' @examples
 #' a <- 1:12
-#' a_gpu <- createGPUmat(a,3,4)
-#' tGPU(a_gpu)->c_gpu
-#' gatherGPU(c_gpu)
-
+#' a_gpu <- creategpu(a, 3, 4)
+#' tgpu(a_gpu) -> c_gpu
+#' gathergpu(c_gpu)
 
 tGPU <- function(X)
 {
   checkGPU(X)
   ext <- .Call(
-              "tGPU",
-               X$ptr,
-               as.integer(X[2]),
-               as.integer(X[3])            
-            )
-   ext<-GPUobject(ext, as.integer(X[3]),as.integer(X[2]))
+                "tGPU",
+                 X$ptr,
+                 as.integer(X[2]),
+                 as.integer(X[3])            
+               )
+   ext <- GPUobject(ext, as.integer(X[3]),as.integer(X[2]))
    return(ext)
 }
 
 
-
-#' inverseGPU
+#' inversegpu
 #'
-#' This function computes the inverse of given matrix (square) 
-#' by using CUDA cublas function cublasDgetrfBatched and cublasDgetriBatched (LU decomposition)
+#' This function computes the inversion of given matrix (squared) 
+#' by using CUDA cublas function cublasDgetrfBatched 
+#' and cublasDgetriBatched (LU decomposition)
 #' @param X input matrix; list of R external GPU pointer and dimension 
-#' @return matrix inverse, a list consisting of
+#' @return matrix inversion, a list consisting of
 #' \itemize{
 #' \item{ptr: }{GPU pointer}
-#' \item{m: }{matrix X's number of rows}
-#' \item{n: }{matrix X's number of columns}
+#' \item{m: }{number of rows}
+#' \item{n: }{number of columns}
 #' }
-#' @seealso \code{\link{mmGPU}} \code{\link{createGPUmat}} 
+#' @seealso \code{\link{mmgpu}} \code{\link{creategpu}} 
 #' @export
 #' @examples
 #' a <- 1:9
-#' a_gpu <- createGPUmat(a,3,3)
-#' inverseGPU(a_gpu)->c_gpu
-#' gatherGPU(c_gpu)
+#' a_gpu <- creategpu(a, 3, 3)
+#' inversegpu(a_gpu) -> c_gpu
+#' gathergpu(c_gpu)
 
-
-
-inverseGPU<-function(X)
+inversegpu<-function(X)
 {
     checkGPU(X)
-    if (as.integer(X[2])!=as.integer(X[3]))
-    stop ("only square matrix supported")
-    ext<-.Call(
-                "inversGPU",
-                X$ptr,                         
-                as.integer(X[2])
-              )
-    ext<-GPUobject(ext, as.integer(X[2]),as.integer(X[2]))
-    gc()
+    if (as.integer(X[2]) != as.integer(X[3]))
+    	stop ("only squared matrix is supported")
+    ext <- .Call(
+                  "inversGPU",
+                  X$ptr,                         
+                  as.integer(X[2])
+                 )
+    ext <- GPUobject(ext, as.integer(X[2]), as.integer(X[2]))
     return(ext)
-
 }
-
-
-

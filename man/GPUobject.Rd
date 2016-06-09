@@ -4,29 +4,31 @@
 \alias{GPUobject}
 \title{GPUobject}
 \usage{
-GPUobject(input, length1, length2)
+GPUobject(input, nrow, ncol)
 }
 \arguments{
 \item{input}{R external pointer}
 
-\item{length1}{vector length}
+\item{nrow}{number of rows}
 
-\item{length2}{always 1 as vector}
+\item{ncol}{number of columns}
 }
 \value{
 a list consisting of
 \itemize{
 \item{ptr: }{GPU pointer}
-\item{m: }{vector length}
-\item{n: }{always 1 as vector}
+\item{m: }{number of rows}
+\item{n: }{number of columns}
 }
 }
 \description{
-classify the input as GPU vector and assign its dimension
+classify the input as GPU vector/matrix and assign its dimension
 }
 \details{
-This function classifies the input object as GPU vector and assign its dimension.
-The output of this function is a list consisting of the GPU pointer and its dimension.
+This function classifies the input object as GPU vector/matrix
+and assign its dimension
+The output of this function is a list consisting of the GPU pointer
+and its dimension
 }
 \note{
 output is a R external GPU pointer and can only be used in Rcublas functions
@@ -35,7 +37,7 @@ output is a R external GPU pointer and can only be used in Rcublas functions
 Yuan Li
 }
 \seealso{
-\code{\link{gatherGPU}}
+\code{\link{gathergpu}}
 }
 \keyword{GPU}
 \keyword{create}
