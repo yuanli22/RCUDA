@@ -1,6 +1,7 @@
 #' GPUobject
 #'
 #' classify the input as GPU vector and assign its dimension
+#'
 #' This function classifies the input object as GPU vector and assign its dimension.
 #' The output of this function is a list consisting of the GPU pointer and its dimension. 
 #' @param input R external pointer
@@ -26,4 +27,10 @@ GPUobject <- function(input, length1, length2)
     class(obj) <- append(class(obj), "GPUvector")
     return (obj)
                
+}
+
+checkGPU <- function(input)
+{
+    if (inherits(input, "GPUvector") == "FALSE")
+    stop("input is not a GPUvector")
 }

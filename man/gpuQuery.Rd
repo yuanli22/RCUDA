@@ -13,6 +13,6 @@ This function returns the information of available GPU device in system
 gpuQuery()
 }
 \seealso{
-\code{\link{createGPU}}
+\code{\link{creategpu}}
 }
 
