@@ -1,7 +1,7 @@
 rm(list = ls())
 install.packages("/mnt/home/yli16/yli16/Rcublas_0.1.tar.gz", repos = NULL,INSTALL_opts = c('--no-lock'))
 library(Rcublas)
-gpuQuery()
+gpuquery()
  
 ## define some constant
 eps <- 1e-5
@@ -42,11 +42,11 @@ GPUtest(result, "create and gather function run perfectly!\n",
 
 ##test level 1 cublas functions
 ##test min 
-(abs(min(abs(a)) - abs(a[minGPU(x)])) < eps) -> result
+(abs(min(abs(a)) - abs(a[mingpu(x)])) < eps) -> result
 GPUtest(result, "min function run perfectly!",
         "min function fail!")
 system.time(multiplerun(min(abs(a)), runtime)) -> timecpu
-system.time(multiplerun(minGPU(x), runtime)) -> timegpu
+system.time(multiplerun(mingpu(x), runtime)) -> timegpu
 cat("min function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)",timecpu[3] / timegpu[3], "\n")
 L1testout[k,1] <- c("Minimum")
@@ -57,11 +57,11 @@ L1testout[k,5] <- timegpu[3]
  
 
 ##test max
-(abs(max(abs(a))-abs(a[maxGPU(x)]))<eps)->result
+(abs(max(abs(a))-abs(a[maxgpu(x)]))<eps)->result
 GPUtest(result,"max function run perfectly!",
         "max function fail!")
 system.time(multiplerun(max(abs(a)), runtime)) -> timecpu
-system.time(multiplerun(maxGPU(x), runtime)) -> timegpu
+system.time(multiplerun(maxgpu(x), runtime)) -> timegpu
 cat("max function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)",timecpu[3] / timegpu[3], "\n")
 L1testout[length(vec)+k,1] <- c("Maximum")
@@ -73,11 +73,11 @@ L1testout[length(vec)+k,5] <- timegpu[3]
 
 
 ##test norm2
-(abs(sqrt(sum(a * a))-norm2GPU(x)) < eps) -> result
+(abs(sqrt(sum(a * a))-norm2gpu(x)) < eps) -> result
 GPUtest(result,"norm2 function run perfectly!",
         "norm2 function fail!")
 system.time(multiplerun(sqrt(sum(a * a)), runtime)) -> timecpu
-system.time(multiplerun(norm2GPU(x), runtime)) -> timegpu
+system.time(multiplerun(norm2gpu(x), runtime)) -> timegpu
 cat("norm2 function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)",timecpu[3] / timegpu[3], "\n")
 L1testout[2*length(vec)+k,1] <- c("norm2")
@@ -90,11 +90,11 @@ L1testout[2*length(vec)+k,5] <- timegpu[3]
 
 
 ##test dot
-(abs(sum(a * a) - dotGPU(x, x)) < eps) -> result
+(abs(sum(a * a) - dotgpu(x, x)) < eps) -> result
 GPUtest(result,"dot function run perfectly!",
         "dot function fail!")
 system.time(multiplerun(sum(a * a), runtime)) -> timecpu
-system.time(multiplerun(dotGPU(x, x), runtime)) -> timegpu
+system.time(multiplerun(dotgpu(x, x), runtime)) -> timegpu
 cat("dot function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)",timecpu[3] / timegpu[3], "\n")
 L1testout[3*length(vec)+k,1] <- c("dot")
@@ -108,11 +108,11 @@ L1testout[3*length(vec)+k,5] <- timegpu[3]
 
 ##test vector scale
 alpha<-rnorm(1)
-(abs(sum(a * alpha - gathergpu(scaleGPU(x , alpha)))) / vec[k] < eps) -> result
+(abs(sum(a * alpha - gathergpu(scalegpu(x , alpha)))) / vec[k] < eps) -> result
 GPUtest(result,"scale function run perfectly!",
         "scale function fail!")
 system.time(multiplerun(a * alpha, runtime)) -> timecpu
-system.time(multiplerun(scaleGPU(x, alpha), runtime)) -> timegpu
+system.time(multiplerun(scalegpu(x, alpha), runtime)) -> timegpu
 cat("scale function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)",timecpu[3] / timegpu[3], "\n")
 L1testout[4*length(vec)+k,1] <- c("scale")
@@ -139,12 +139,12 @@ a <- rnorm(vec[k])
 b <- rnorm(vec[k])
 creategpu(a) -> x
 creategpu(b) -> y
-addGPU(x, y) -> z
+addgpu(x, y) -> z
 (sum(abs(gathergpu(z ) - (a + b)) < eps) == vec[k]) -> result
 GPUtest(result,"vector addition function run perfectly!",
         "vector addition function fail!")
 system.time(multiplerun(a + b, runtime) )-> timecpu
-system.time(multiplerun(addGPU(x, y ), runtime)) -> timegpu
+system.time(multiplerun(addgpu(x, y ), runtime)) -> timegpu
 cat("vector addition function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L2testout[0*length(vec)+k,1] <- c("vector addition")
@@ -156,12 +156,12 @@ L2testout[0*length(vec)+k,5] <- timegpu[3]
 
 
 ##test vector subtraction
-subtractGPU(x, y) -> z
+subtractgpu(x, y) -> z
 (sum(abs(gathergpu(z ) - (a - b)) < eps) == vec[k]) -> result
 GPUtest(result,"vector subtraction function run perfectly!", 
 "vector subtraction function fail!")
 system.time(multiplerun((a - b), runtime)) -> timecpu
-system.time(multiplerun((subtractGPU(x, y )), runtime)) -> timegpu
+system.time(multiplerun((subtractgpu(x, y )), runtime)) -> timegpu
 cat("vector subtraction function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L2testout[1*length(vec)+k,1] <- c("vector subtraction")
@@ -173,12 +173,12 @@ L2testout[1*length(vec)+k,5] <- timegpu[3]
 
 
 ##test vector multiplication 
-multiplyGPU(x, y) -> z
+multiplygpu(x, y) -> z
 (sum(abs(gathergpu(z ) - (a * b)) < eps) == vec[k]) -> result
 GPUtest(result,"vector multiplication function run perfectly!",
         "vector multiplication function fail!")
 system.time(multiplerun((a * b), runtime*10000)) -> timecpu
-system.time(multiplerun((multiplyGPU(x, y )), runtime*10000)) -> timegpu
+system.time(multiplerun((multiplygpu(x, y )), runtime*10000)) -> timegpu
 cat("vector multiplication function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L2testout[2*length(vec)+k,1] <- c("vector multiplication")
@@ -189,12 +189,12 @@ L2testout[2*length(vec)+k,5] <- timegpu[3]
 
 
 ##test vector division
-divideGPU(x, y) -> z
+dividegpu(x, y) -> z
 (sum(abs(gathergpu(z) - (a / b)) < eps) == vec[k]) -> result
 GPUtest(result,"vector division function run perfectly!",
         "vector division function fail!")
 system.time(multiplerun((a / b), runtime)) -> timecpu
-system.time(multiplerun((divideGPU(x, y)), runtime)) -> timegpu
+system.time(multiplerun((dividegpu(x, y)), runtime)) -> timegpu
 cat("vector division function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L2testout[3*length(vec)+k,1] <- c("vector division")
@@ -218,13 +218,13 @@ matrixA <- matrix(rnorm(m * n), m, n)
 matrixB <- matrix(rnorm(n * j), n, j)
 creategpu(as.vector(matrixA), m, n) -> x
 creategpu(a) -> y
-mvGPU(x, y) -> z
+mvgpu(x, y) -> z
 gathergpu(z) -> c
 (sum(abs(matrixA %*% a - c) < eps) == m) -> result
 GPUtest(result,"M * V function run perfectly!",
         "M * V function fail!")
 system.time(multiplerun(matrixA %*% a, runtime)) -> timecpu
-system.time(multiplerun(mvGPU(x, y), runtime)) -> timegpu
+system.time(multiplerun(mvgpu(x, y), runtime)) -> timegpu
 cat("M * V function for matrix dimension", m,"*", n,
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L2testout[4*length(vec)+k,1] <- c("matrix * vector")
@@ -252,13 +252,13 @@ matrixA <- matrix(runif(m * n), m, n)
 matrixB <- matrix(runif(n * j), n, j)
 creategpu(as.vector((matrixA)), m, n) -> x
 creategpu(as.vector((matrixB)), n, j) -> y
-mmGPU(x, y) -> z
+mmgpu(x, y) -> z
 gathergpu(z) -> c
 (sum(abs(as.vector(matrixA %*% matrixB) - c) < eps) == m * j) -> result
 GPUtest(result,"M * M function run perfectly!",
         "M * M function fail!")
 system.time(multiplerun(matrixA %*% matrixB, runtime)) -> timecpu
-system.time(multiplerun(mmGPU(x, y ), runtime)) -> timegpu
+system.time(multiplerun(mmgpu(x, y ), runtime)) -> timegpu
 cat("M * M function for matrix dimension", m,"*", n, "*", j,
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L3testout[0*length(vec)+k,1] <- c("matrix * matrix")
@@ -279,13 +279,13 @@ m <- vec[k]
 n <- vec[k]
 matrixA <- matrix(runif(m * n), m, n)
 creategpu(as.vector((matrixA)), m, n) -> x
-tGPU(x)->z
+tgpu(x)->z
 gathergpu(z)->tx
 (sum(abs(as.vector(t(matrixA)) - tx)) < eps) -> result
 GPUtest(result,"transpose function run perfectly!",
         "transpose function fail!")
 system.time(multiplerun(t(matrixA), runtime)) -> timecpu
-system.time(multiplerun(tGPU(x), runtime)) -> timegpu
+system.time(multiplerun(tgpu(x), runtime)) -> timegpu
 cat("transpose function for for matrix dimension", m,"*", n,
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L3testout[1*length(vec)+k,1] <- c("matrix transpose")
@@ -301,13 +301,13 @@ L3testout[1*length(vec)+k,5] <- timegpu[3]
 rnorm(n * n, 500,141) -> a
 creategpu(a,n,n) -> x
 matrix(a, n, n) -> a
-inverseGPU(x) -> y
+inversegpu(x) -> y
 gathergpu(y) -> b
 (sum(abs(as.vector(solve(a)) - as.vector(b))) < eps) -> result
 GPUtest(result,"inverse function run perfectly!",
         "inverse function fail!")
 system.time(multiplerun(solve(a), runtime)) -> timecpu
-system.time(multiplerun(inverseGPU(x), runtime)) -> timegpu
+system.time(multiplerun(inversegpu(x), runtime)) -> timegpu
 cat("inverse function for for matrix dimension", n,"*", n,
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 
@@ -331,7 +331,7 @@ for (k in 1:length(vec))
 {
 n <- vec[k]
 system.time(multiplerun(rnorm(n), runtime)) -> timecpu
-system.time(multiplerun(normRNGGPU(n, 1, 0, 1), runtime)) -> timegpu
+system.time(multiplerun(rnormgpu(n, 1, 0, 1), runtime)) -> timegpu
 cat("generating", n, "normal number",
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L4testout[0*length(vec)+k,1] <- c("normal random numbers generator")
@@ -343,7 +343,7 @@ L4testout[0*length(vec)+k,5] <- timegpu[3]
 
 ##compare log norm
 system.time(multiplerun(rlnorm(n), runtime)) -> timecpu
-system.time(multiplerun(lognormRNGGPU(n, 1, 0, 1), runtime)) -> timegpu
+system.time(multiplerun(rlognormgpu(n, 1, 0, 1), runtime)) -> timegpu
 cat("generating", n, "lognormal number",
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L4testout[1*length(vec)+k,1] <- c("log-normal random numbers generator")
@@ -355,7 +355,7 @@ L4testout[1*length(vec)+k,5] <- timegpu[3]
 
 ##compare uniform
 system.time(multiplerun(runif(n), runtime)) -> timecpu
-system.time(multiplerun(uniformRNGGPU(n, 1), runtime)) -> timegpu
+system.time(multiplerun(runifgpu(n, 1), runtime)) -> timegpu
 cat("generating", n, "uniform number",
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L4testout[2*length(vec)+k,1] <- c("uniform random numbers generator")
@@ -367,7 +367,7 @@ L4testout[2*length(vec)+k,5] <- timegpu[3]
 
 ##compare poisson
 system.time(multiplerun(rpois(n, 1), runtime)) -> timecpu
-system.time(multiplerun(poissonRNGGPU(n, 1, 1), runtime)) -> timegpu
+system.time(multiplerun(rpoisgpu(n, 1, 1), runtime)) -> timegpu
 cat("generating", n, "poisson number",
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L4testout[3*length(vec)+k,1] <- c("Poisson random numbers generator")
@@ -390,13 +390,13 @@ for (k in 1:length(vec))
 n <- vec[k]
 abs(rnorm(n, 1, 1)) -> a
 ag <- creategpu(a)
-expGPU(ag)->result
+expgpu(ag)->result
 gathergpu(result)->resultgpu
 (sum(abs(resultgpu - exp(a))) < eps) -> result
 GPUtest(result,"element-wise exponential function run perfectly!",
         "element-wise exponential fail!")
 system.time(multiplerun(exp(a), runtime)) -> timecpu
-system.time(multiplerun(expGPU(ag), runtime)) -> timegpu
+system.time(multiplerun(expgpu(ag), runtime)) -> timegpu
 cat("element-wise exponential function for vector of size", n,
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L5testout[0*length(vec)+k,1] <- c("element-wise exponential")
@@ -408,13 +408,13 @@ L5testout[0*length(vec)+k,5] <- timegpu[3]
 
 
 ##test element-wise log 
-logGPU(ag)->result
+loggpu(ag)->result
 gathergpu(result)->resultgpu
 (sum(abs(resultgpu - log(a))) < eps) -> result
 GPUtest(result,"element-wise log function run perfectly!",
         "element-wise log fail!")
 system.time(multiplerun(log(a), runtime)) -> timecpu
-system.time(multiplerun(logGPU(ag), runtime)) -> timegpu
+system.time(multiplerun(loggpu(ag), runtime)) -> timegpu
 cat("element-wise log function for vector of size", n,
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L5testout[1*length(vec)+k,1] <- c("element-wise log")
@@ -425,13 +425,13 @@ L5testout[1*length(vec)+k,5] <- timegpu[3]
 
 
 ##test element-wise sqrt 
-sqrtGPU(ag)->result
+sqrtgpu(ag)->result
 gathergpu(result)->resultgpu
 (sum(abs(resultgpu - sqrt(a))) < eps) -> result
 GPUtest(result,"element-wise sqrt function run perfectly!",
         "element-wise sqrt fail!")
 system.time(multiplerun(sqrt(a), runtime)) -> timecpu
-system.time(multiplerun(sqrtGPU(ag), runtime)) -> timegpu
+system.time(multiplerun(sqrtgpu(ag), runtime)) -> timegpu
 cat("element-wise sqrt function vector of size", n,
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L5testout[2*length(vec)+k,1] <- c("element-wise sqrt")
@@ -444,13 +444,13 @@ L5testout[2*length(vec)+k,5] <- timegpu[3]
 
 ##test element-wise power 
 alpha <- runif(1)
-powerGPU(ag, alpha)->result
+powergpu(ag, alpha)->result
 gathergpu(result)->resultgpu
 (sum(abs(resultgpu - a^alpha)) < eps) -> result
 GPUtest(result,"element-wise power function run perfectly!",
         "element-wise power fail!")
 system.time(multiplerun(a^alpha, runtime)) -> timecpu
-system.time(multiplerun(powerGPU(ag, alpha), runtime)) -> timegpu
+system.time(multiplerun(powergpu(ag, alpha), runtime)) -> timegpu
 cat("element-wise power function vector of size", n,
     "speed up is(CPU time / GPU time)", timecpu[3] / timegpu[3], "\n")
 L5testout[3*length(vec)+k,1] <- c("element-wise power")
@@ -468,11 +468,11 @@ for (k in 1:length(vec))
 n <- vec[k]
 abs(rnorm(n, 1, 1)) -> a
 ag <- creategpu(a)
-(abs(sum(a)-sumGPU(ag)) < eps) -> result
+(abs(sum(a)-sumgpu(ag)) < eps) -> result
 GPUtest(result,"reduction sum function run perfectly!",
         "reduction sum function fail!")
 system.time(multiplerun(sum(a), runtime)) -> timecpu
-system.time(multiplerun(sumGPU(ag), runtime)) -> timegpu
+system.time(multiplerun(sumgpu(ag), runtime)) -> timegpu
 cat("reduction sum function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)",timecpu[3] / timegpu[3], "\n")
 L5testout[4*length(vec)+k,1] <- c("vector reduction sum")

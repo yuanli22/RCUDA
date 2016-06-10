@@ -49,8 +49,8 @@ scalegpu <- function(input, alpha)
 #' @examples
 #' a <- 1:4
 #' a_gpu <- creategpu(a)
-#' sqrtGPU(a_gpu) -> b_gpu
-#' gatherGPU(b_gpu)
+#' sqrtgpu(a_gpu) -> b_gpu
+#' gathergpu(b_gpu)
 
 sqrtgpu <- function(input) 
 { 
@@ -82,10 +82,10 @@ sqrtgpu <- function(input)
 #' @examples
 #' a <- 1:4
 #' a_gpu <- creategpu(a)
-#' logGPU(a_gpu) -> b_gpu
-#' gatherGPU(b_gpu)
+#' loggpu(a_gpu) -> b_gpu
+#' gathergpu(b_gpu)
 
-logGPU <- function(input) 
+loggpu <- function(input) 
 {
     checkGPU(input) 
     ext <- .Call("vector_log", 
@@ -151,7 +151,7 @@ expgpu <- function(input)
 #' powergpu(a_gpu, b) -> b_gpu
 #' gathergpu(b_gpu)
 
-powerGPU <- function(input, alpha = 1) 
+powergpu <- function(input, alpha = 1) 
 {
     checkGPU(input)
     ext <- .Call("vector_power", 
@@ -169,7 +169,8 @@ powerGPU <- function(input, alpha = 1)
 #'
 #' This function computes the beta function of the given vector/matrix
 #' by using self-defined CUDA function
-#' @param input list consisting of R external GPU pointer and dimension 
+#' @param x list consisting of R external GPU pointer and dimension 
+#' @param y list consisting of R external GPU pointer and dimension 
 #' @return beta function result of given vector/matrix, a list consisting of
 #' \itemize{
 #' \item{ptr: }{GPU pointer}
@@ -181,7 +182,7 @@ powerGPU <- function(input, alpha = 1)
 #' @examples
 #' a <- 1:4
 #' a_gpu <- creategpu(a)
-#' betagpu(a_gpu) -> b_gpu
+#' betagpu(a_gpu, a_gpu) -> b_gpu
 #' gathergpu(b_gpu)
 
 betagpu <- function (x, y) 

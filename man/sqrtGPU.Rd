@@ -24,8 +24,8 @@ by using self-defined CUDA function
 \examples{
 a <- 1:4
 a_gpu <- creategpu(a)
-sqrtGPU(a_gpu) -> b_gpu
-gatherGPU(b_gpu)
+sqrtgpu(a_gpu) -> b_gpu
+gathergpu(b_gpu)
 }
 \seealso{
 \code{\link{expgpu}}

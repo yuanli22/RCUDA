@@ -1,6 +1,6 @@
 /*
-This is the C source code for Rcublas package, wrapping some CUDA CUBLAS
-library functions for R users. 
+This source file contains CUDA and CUBLAS safe call function, R external
+pointer finalizer and check functions.  
 */
 #include <R.h>
 #include <cuda.h>
@@ -17,17 +17,17 @@ if any error occur, this function will
 return the error information and stop the 
 program.
 */
-#define cudacall(call)                                                        \
+#define cudacall(call)                                                           \
 	do                                                                        \
 	{                                                                         \
-	cudaError_t err = (call);                                             \
-	if(cudaSuccess != err)                                             \
-		{                                                                     \
+	cudaError_t err = (call);                                                 \
+	if(cudaSuccess != err)                                                    \
+		{                                                                  \
 		fprintf(stderr, "CUDA Error:\nFile = %s\nLine = %d\nReason = %s\n",\
 		__FILE__, __LINE__, cudaGetErrorString(err));                      \
 		cudaDeviceReset();                                                 \
 		exit(EXIT_FAILURE);                                                \
-		}                                                                     \
+		}                                                                  \
 	}                                                                         \
 	while (0)
 
@@ -81,16 +81,15 @@ program.
 	while(0)
 
 /*
-define finalizer for R external pointer
+define finalizer of R external pointer,
 input is R external pointer, function will finalize the pointer 
-when it is not in use.
+when it is not in use and free the allocated memory.
 */
 static void _finalizer(SEXP ext)
 {
 	if (!R_ExternalPtrAddr(ext))
 		return;
-       double * ptr= (double *) R_ExternalPtrAddr(ext);
-//	Rprintf("finalizer invoked once \n");
+       double * ptr = (double *) R_ExternalPtrAddr(ext);
 	cudacall(cudaFree(ptr));
 	R_ClearExternalPtr(ext);
 }
@@ -100,7 +99,7 @@ define check function for R external pointer
 return error message if input is 
 not R external pointer.
 */
-SEXP  checkExternalPrt( SEXP input)
+SEXP  checkExternalPrt(SEXP input)
 {
 	if (TYPEOF(input) != EXTPTRSXP)
 	{

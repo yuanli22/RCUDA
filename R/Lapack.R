@@ -17,7 +17,7 @@
 #' tgpu(a_gpu) -> c_gpu
 #' gathergpu(c_gpu)
 
-tGPU <- function(X)
+tgpu <- function(X)
 {
   checkGPU(X)
   ext <- .Call(

@@ -1,7 +1,6 @@
 #include "cudadefine.h"
 /*
-First 2 functions are the data allocation 
-and transformation between R and C
+This file contains all R interfaces of CUBLAS and CURAND functions
 */
 
 /*
@@ -22,8 +21,7 @@ SEXP createGPU(SEXP input, SEXP n)
 	//protect the R external pointer from finalizer
 	SEXP ext = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
 	R_RegisterCFinalizerEx(ext, _finalizer, TRUE);
-	 
-	//copying CPU to GPU
+	//copying data from CPU to GPU
        cudacall(cudaMemcpy(x, temp, sizeof(double)*(*lenth), 
                 cudaMemcpyHostToDevice));
        UNPROTECT(2);
@@ -41,12 +39,13 @@ SEXP gatherGPU(SEXP ext, SEXP n)
 	int *lenth = INTEGER(n);
 	SEXP out;
 	PROTECT(out = NEW_NUMERIC(*lenth)); 
-	//copying GPU vector back to CPU
+	//copying data from GPU back to CPU
        cudacall(cudaMemcpy(NUMERIC_POINTER(out), R_ExternalPtrAddr(ext),
                 sizeof(double)*(*lenth), cudaMemcpyDeviceToHost));  
 	UNPROTECT(1); 
 	return out;  
 }
+
 /*CULBLAS level 1 functions*/
 /*
 define function to find the (smallest) 
@@ -62,7 +61,7 @@ SEXP minGPU(SEXP ext, SEXP n)
 	//create CUBLAS handle
 	cublascall(cublasCreate_v2(&handle));
 	int *lenth = INTEGER(n);
-	//the cublasIdamin only takes pointer for the output argument
+	//the cublasIdamin only takes pointer as the output argument
 	SEXP out;
 	PROTECT(out = allocVector(REALSXP, 1));
 	int *t = malloc(1 * sizeof(int));
@@ -135,7 +134,7 @@ SEXP dotGPU(SEXP extV1, SEXP extV2, SEXP n)
 	PROTECT(out = allocVector(REALSXP, 1));
 	double *t = malloc(1 * sizeof(double));
 	cublascall(cublasDdot (handle, *lenthN, R_ExternalPtrAddr(extV1),
-		1, R_ExternalPtrAddr(extV2), 1, t));
+		    1, R_ExternalPtrAddr(extV2), 1, t));
 	REAL(out)[0] = *t;
 	free(t);
 	UNPROTECT(1); 
@@ -161,7 +160,7 @@ SEXP scaleGPU(SEXP input, SEXP n, SEXP alpha)
 	SEXP out = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
 	R_RegisterCFinalizerEx(out, _finalizer, TRUE);
 	cublascall(cublasDcopy(handle, *lenthN, R_ExternalPtrAddr(input), 
-		1, R_ExternalPtrAddr(out), 1));
+		    1, R_ExternalPtrAddr(out), 1));
 	cublascall(cublasDscal(handle, *lenthN, a, R_ExternalPtrAddr(out), 1));
 	UNPROTECT(1); 
 	cublascall(cublasDestroy_v2(handle));
@@ -193,14 +192,13 @@ SEXP addGPU(SEXP extM1, SEXP extM2, SEXP m, SEXP n)
 	alpha[0] = 1;
 	double *beta = malloc(1 * sizeof(double));
 	beta[0] = 1;	
-	cublascall(cublasDgeam(handle, CUBLAS_OP_N, CUBLAS_OP_N, *lenthM, *lenthN,
-		alpha, R_ExternalPtrAddr(extM1),
-		*lenthM, beta, R_ExternalPtrAddr(extM2),*lenthM,
-		R_ExternalPtrAddr(ext), *lenthM));
+	cublascall(cublasDgeam(handle, CUBLAS_OP_N, CUBLAS_OP_N, *lenthM, 
+                  *lenthN, alpha, R_ExternalPtrAddr(extM1),
+		    *lenthM, beta, R_ExternalPtrAddr(extM2),*lenthM,
+		    R_ExternalPtrAddr(ext), *lenthM));
 	cublascall(cublasDestroy_v2(handle));
 	return(ext);
 }
-
 
 /*
 define function to calculate the element-wise subtraction
@@ -225,15 +223,13 @@ SEXP subtractGPU(SEXP extM1, SEXP extM2, SEXP m, SEXP n)
 	alpha[0] = 1;
 	double *beta = malloc(1 * sizeof(double));
 	beta[0] = -1;	
-	cublascall(cublasDgeam(handle, CUBLAS_OP_N, CUBLAS_OP_N, *lenthM, *lenthN,
-		alpha, R_ExternalPtrAddr(extM1),
-		*lenthM, beta, R_ExternalPtrAddr(extM2),*lenthM,
-		R_ExternalPtrAddr(ext), *lenthM));
+	cublascall(cublasDgeam(handle, CUBLAS_OP_N, CUBLAS_OP_N, *lenthM, 
+		    *lenthN,alpha, R_ExternalPtrAddr(extM1),
+		    *lenthM, beta, R_ExternalPtrAddr(extM2),*lenthM,
+		    R_ExternalPtrAddr(ext), *lenthM));
 	cublascall(cublasDestroy_v2(handle));
 	return(ext);
 }
-
-
 
 /*
 define function to calculate the element-wise multiplication
@@ -253,17 +249,11 @@ SEXP vvGPU(SEXP extM, SEXP extV, SEXP n)
 	R_RegisterCFinalizerEx(ext, _finalizer, TRUE);
 	UNPROTECT(1);
 	cublascall(cublasDdgmm(handle, CUBLAS_SIDE_RIGHT, 1, *lenthN, 
-		R_ExternalPtrAddr(extM), 1, 
-		R_ExternalPtrAddr(extV), 1, 
-		R_ExternalPtrAddr(ext), 1));
+		    R_ExternalPtrAddr(extM), 1, 
+		    R_ExternalPtrAddr(extV), 1, 
+		    R_ExternalPtrAddr(ext), 1));
 	return(ext); 
 }
-
-
-
-
-
-
 
 /*
 define function to calculate the matrix times vector
@@ -292,9 +282,9 @@ SEXP mvGPU(SEXP extM, SEXP extV, SEXP m, SEXP n)
 	double *beta = malloc(1 * sizeof(double));
 	beta[0] = 0;
 	cublascall(cublasDgemv(handle, CUBLAS_OP_N, *lenthM, *lenthN, alpha, 
-		R_ExternalPtrAddr(extM), *lenthM, 
-		R_ExternalPtrAddr(extV), 1, beta, 
-		R_ExternalPtrAddr(ext), 1));
+		    R_ExternalPtrAddr(extM), *lenthM, 
+		    R_ExternalPtrAddr(extV), 1, beta, 
+		    R_ExternalPtrAddr(ext), 1));
 	cublascall(cublasDestroy_v2(handle));
 	return(ext); 
 }
@@ -325,10 +315,10 @@ SEXP mmGPU(SEXP extM1, SEXP extM2, SEXP m, SEXP n, SEXP k)
 	alpha[0] = 1;
 	double *beta = malloc(1 * sizeof(double));
 	beta[0] = 0;	
-	cublascall(cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, *lenthM, *lenthN,
-		*lenthK, alpha, R_ExternalPtrAddr(extM1),
-		*lenthM, R_ExternalPtrAddr(extM2),
-		*lenthK, beta, R_ExternalPtrAddr(ext), *lenthM));
+	cublascall(cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, *lenthM, 
+		    *lenthN, *lenthK, alpha, R_ExternalPtrAddr(extM1),
+		    *lenthM, R_ExternalPtrAddr(extM2),
+		    *lenthK, beta, R_ExternalPtrAddr(ext), *lenthM));
 	cublascall(cublasDestroy_v2(handle));
 	return(ext);
 }
@@ -356,10 +346,10 @@ SEXP tGPU(SEXP extM, SEXP m, SEXP n)
 	alpha[0]=1;
 	double *beta = malloc(1 * sizeof(double));
 	beta[0]=0;	
-	cublascall(cublasDgeam(handle, CUBLAS_OP_T, CUBLAS_OP_N, *lenthN, *lenthM,
-		alpha, R_ExternalPtrAddr(extM), *lenthM, beta,
-		R_ExternalPtrAddr(extM), *lenthN,
-		R_ExternalPtrAddr(ext), *lenthN));
+	cublascall(cublasDgeam(handle, CUBLAS_OP_T, CUBLAS_OP_N, *lenthN, 
+		    *lenthM, alpha, R_ExternalPtrAddr(extM), *lenthM, beta,
+		    R_ExternalPtrAddr(extM), *lenthN,
+		    R_ExternalPtrAddr(ext), *lenthN));
 	cublascall(cublasDestroy_v2(handle));
 	return(ext);
 }
@@ -390,7 +380,8 @@ SEXP inversGPU(SEXP ext, SEXP n)
 	//info is the information about LU decomposition function
 	cudacall(cudaMalloc((void**)&info, batchSize * sizeof(int)));
 	double* input;
-	cudacall(cudaMalloc((void**)&input, *lenthN * (*lenthN) * sizeof(double)));
+	cudacall(cudaMalloc((void**)&input, *lenthN * 
+                           (*lenthN) * sizeof(double)));
 	cublascall(cublasDcopy(handle, *lenthN * (*lenthN), 
 		R_ExternalPtrAddr(ext), 1, input, 1));
 	//input of cublasDgetrfBatched is supposed to be array of pointers 
@@ -402,7 +393,7 @@ SEXP inversGPU(SEXP ext, SEXP n)
 	cublascall(cublasSetVector(batchSize, sizeof(A), A, 1, A_d, 1));
 	//perform LU decomposition and output the pivot to vector P(device)
 	cublascall(cublasDgetrfBatched(handle, *lenthN, A_d, 
-		*lenthN, P, info, batchSize));
+		    *lenthN, P, info, batchSize));
 	//output of cublasDgetrfBatched is supposed to be array of pointers 
 	//to matrices, here we create a double pointer pointing to 
 	//size-one array of matrix(device)
@@ -412,9 +403,9 @@ SEXP inversGPU(SEXP ext, SEXP n)
 	double** C_d;
 	cudacall(cudaMalloc((void**)&C_d, batchSize * sizeof(C)));
 	cublascall(cublasSetVector(batchSize, sizeof(C), C, 1, C_d, 1));   
-	//perform inverse by taking the pivot P as input
+	//perform matrix inverse by taking the pivot P as input
 	cublascall(cublasDgetriBatched(handle, *lenthN, A_d, *lenthN, P, 
-		C_d, *lenthN, info, batchSize));
+		    C_d, *lenthN, info, batchSize));
 	SEXP out = PROTECT(R_MakeExternalPtr(output, R_NilValue, R_NilValue));
 	R_RegisterCFinalizerEx(out, _finalizer, TRUE);
 	UNPROTECT(1);
@@ -522,13 +513,13 @@ SEXP normRNGGPU(SEXP n, SEXP mean, SEXP sd, SEXP seed)
 	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT);
 	curandSetPseudoRandomGeneratorSeed(gen, *s);
 	curandGenerateNormalDouble(gen, R_ExternalPtrAddr(out),
-		*lenthN, *m, *d);
+		                    *lenthN, *m, *d);
 	curandDestroyGenerator(gen);
 	return out;
 }
 
 /*
-define function to generate poisson distributied random
+define function to generate Poisson distributied random
 number, input is length of vector, lambda
 and seed, output is pointer pointing to a GPU vector(device)
 */
@@ -568,7 +559,7 @@ SEXP lognormRNGGPU(SEXP n, SEXP mean, SEXP sd, SEXP seed)
 	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT);
 	curandSetPseudoRandomGeneratorSeed(gen, *s);
 	curandGenerateLogNormalDouble(gen, R_ExternalPtrAddr(out),
-		*lenthN, *m, *d);
+		                       *lenthN, *m, *d);
 	curandDestroyGenerator(gen);
 	return out;
 }

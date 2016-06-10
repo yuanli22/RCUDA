@@ -7,7 +7,9 @@
 betagpu(x, y)
 }
 \arguments{
-\item{input}{list consisting of R external GPU pointer and dimension}
+\item{x}{list consisting of R external GPU pointer and dimension}
+
+\item{y}{list consisting of R external GPU pointer and dimension}
 }
 \value{
 beta function result of given vector/matrix, a list consisting of
@@ -24,7 +26,7 @@ by using self-defined CUDA function
 \examples{
 a <- 1:4
 a_gpu <- creategpu(a)
-betagpu(a_gpu) -> b_gpu
+betagpu(a_gpu, a_gpu) -> b_gpu
 gathergpu(b_gpu)
 }
 \seealso{

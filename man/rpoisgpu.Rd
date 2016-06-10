@@ -27,8 +27,7 @@ by using CUDA curand function CURAND_RNG_PSEUDO_DEFAULT
 and curandGeneratePoisson
 }
 \examples{
-a_gpu <- rpoisgpu(100, 1)
-gathergpu(a_gpu)
+a_gpu <- rpoisgpu(100, 1) 
 }
 \seealso{
 \code{\link{runifgpu}}

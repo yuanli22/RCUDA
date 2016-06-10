@@ -117,8 +117,7 @@ runifgpu <- function(n, seed = 1)
 #' @seealso \code{\link{runifgpu}} 
 #' @export
 #' @examples
-#' a_gpu <- rpoisgpu(100, 1)
-#' gathergpu(a_gpu)
+#' a_gpu <- rpoisgpu(100, 1) 
 
 rpoisgpu <- function(n, lambda = 1, seed = 1)
 {
