@@ -50,6 +50,139 @@ mingpu<-function(input)
 }
 
 
+#' asumgpu
+#'
+#' This function computes the summation 
+#' of the absolute values of elements of given vector/matrix
+#' by using CUDA cublas function cublasDasum
+#' @param input list consisting of R external GPU pointer and dimension 
+#' @return the vector/matrix's elements absolute values summation 
+#' @seealso \code{\link{maxgpu}} 
+#' @export
+#' @examples
+#' a <- 1:4
+#' a_gpu <- creategpu(a)
+#' asumgpu(a_gpu) 
+
+asumgpu<-function(input)
+{
+    checkGPU(input)
+    ext <- .Call(
+                  "asumGPU",
+                  input$ptr,              
+                  as.integer(input[2]) * as.integer(input[3])
+                 )
+    return(ext)
+}
+
+
+#' axpygpu
+#'
+#' This function multiplies the vector x by the scalar a and adds it 
+#' to the vector y overwriting the latest vector with the result 
+#' by using CUDA cublas function cublasDaxpy
+#' @param x list consisting of R external GPU pointer and dimension
+#' @param y list consisting of R external GPU pointer and dimension 
+#' @param alpha scale factor alpha
+#' @return updated y vector/matrix
+#' @seealso \code{\link{scalegpu}} 
+#' @export
+#' @examples
+#' a <- 1:4
+#' a_gpu <- creategpu(a)
+#' b_gpu <- creategpu(a)
+#' axpygpu(a_gpu, b_gpu, 1) 
+
+axpygpu<-function(x, y, alpha)
+{
+    checkGPU(x)
+    checkGPU(y)
+    if (as.integer(x[2]) * as.integer(x[3])
+        != as.integer(y[2]) * as.integer(y[3]))
+     stop ("vectors dimension don't match")
+    ext <- .Call(
+                  "axpyGPU",
+                  x$ptr,  
+                  y$ptr,             
+                  as.integer(x[2]) * as.integer(x[3]),
+                  alpha 
+                 )
+  if (as.integer(x[3]) != 1) {
+    ext <- GPUobject(ext, as.integer(x[2]), as.integer(x[3]))
+  } else {
+    ext <- GPUobject(ext, as.integer(y[2]), as.integer(y[3]))
+  }
+    return(ext)
+}
+
+
+#' copygpu
+#'
+#' This function copies the vector x into the vector y  
+#' by using CUDA cublas function cublasDcopy
+#' @param x list consisting of R external GPU pointer and dimension
+#' @param y list consisting of R external GPU pointer and dimension
+#' @return copied vector/matrix
+#' @seealso \code{\link{axypgpu}} 
+#' @export
+#' @examples
+#' a <- 1:4
+#' b <- 2:5
+#' a_gpu <- creategpu(a)
+#' b_gpu <- creategpu(b)
+#' copygpu(a_gpu, b_gpu) 
+
+copygpu<-function(x, y)
+{
+    checkGPU(x)
+    checkGPU(y)
+    if (as.integer(x[2]) * as.integer(x[3])
+        != as.integer(y[2]) * as.integer(y[3]))
+     stop ("vectors dimension don't match")
+    ext <- .Call(
+                  "copyGPU",
+                  x$ptr,   
+                  y$ptr,          
+                  as.integer(x[2]) * as.integer(x[3])
+                 )
+  if (as.integer(x[3]) != 1) {
+    ext <- GPUobject(ext, as.integer(x[2]), as.integer(x[3]))
+  } else {
+    ext <- GPUobject(ext, as.integer(y[2]), as.integer(y[3]))
+  }
+    return(ext)
+}
+
+
+#' scalgpu
+#'
+#' This function scales the vector x by the scalar a  
+#' and overwrites it with the result 
+#' by using CUDA cublas function cublasDscal
+#' @param x list consisting of R external GPU pointer and dimension
+#' @param alpha scale factor alpha
+#' @return scaled vector/matrix
+#' @seealso \code{\link{scalegpu}} 
+#' @export
+#' @examples
+#' a <- 1:4
+#' a_gpu <- creategpu(a)
+#' scalgpu(a_gpu, 2) 
+
+scalgpu<-function(x, alpha)
+{
+    checkGPU(x)
+    ext <- .Call(
+                  "scalGPU",
+                  x$ptr,            
+                  as.integer(x[2]) * as.integer(x[3]),
+                  alpha 
+                 )
+    ext <- GPUobject(ext, as.integer(x[2]), as.integer(x[3]))
+    return(ext)
+}
+
+
 #' dotgpu
 #'
 #' This function computes the dot product of two given vectors/matrix
@@ -83,7 +216,7 @@ dotgpu <- function(x, y)
 }
 
 
-#' norm2gpu
+#' nrm2gpu
 #'
 #' This function computes Euclidean norm of given 
 #' vector/matrix by using CUDA cublas function cublasDnrm2
@@ -98,7 +231,7 @@ dotgpu <- function(x, y)
 #' a_gpu <- creategpu(a)
 #' norm2gpu(a_gpu) 
 
-norm2gpu<-function(input)
+nrm2gpu<-function(input)
 {
     checkGPU(input)
     ext <- .Call(

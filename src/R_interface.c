@@ -96,6 +96,90 @@ SEXP maxGPU(SEXP ext, SEXP n)
 	return out;
 }
 
+
+/*
+define function to compute the summation 
+of the absolute values of elements of given vector/matrix
+input is a R's external pointer pointing to GPU vector
+and its length, output is the summation(host or device) 
+*/
+SEXP asumGPU(SEXP ext, SEXP n)
+{
+	checkExternalPrt(ext);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenth = INTEGER(n);
+	SEXP out;
+	PROTECT(out = allocVector(REALSXP, 1));
+	double *t = malloc(1 * sizeof(double));
+	cublascall(cublasDasum(handle, *lenth, R_ExternalPtrAddr(ext), 1, t));
+	REAL(out)[0] = *t;
+	free(t);
+	UNPROTECT(1); 
+	cublascall(cublasDestroy_v2(handle));
+	return out;
+}
+
+
+/*
+define function to multiply the vector x by the scalar a and adds it to 
+the vector y overwriting the latest vector with the result 
+input is a R's external pointer pointing to GPU vector
+and its length, output is the summation(host or device) 
+*/
+SEXP axpyGPU(SEXP ext1, SEXP ext2, SEXP n, SEXP alpha)
+{
+	checkExternalPrt(ext1);
+	checkExternalPrt(ext2);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenth = INTEGER(n);
+	double *a = REAL(alpha);
+	cublascall(cublasDaxpy(handle, *lenth, a, R_ExternalPtrAddr(ext1),
+                  1, R_ExternalPtrAddr(ext2), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return ext2;
+}
+
+
+/*
+define function to copy the vector x into the vector y 
+input is a R's external pointer pointing to GPU vector
+and its length, output is the summation(host or device) 
+*/
+SEXP copyGPU(SEXP ext1, SEXP ext2, SEXP n)
+{
+	checkExternalPrt(ext1);
+	checkExternalPrt(ext2);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenth = INTEGER(n);
+	cublascall(cublasDcopy(handle, *lenth, R_ExternalPtrAddr(ext1),
+                  1, R_ExternalPtrAddr(ext2), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return ext2;
+}
+
+
+/*
+define function to scale the vector x by the scalar a 
+and overwrites it with the result 
+input is a R's external pointer pointing to GPU vector
+and its length, output is the summation(host or device) 
+*/
+SEXP scalGPU(SEXP ext, SEXP n, SEXP alpha)
+{
+	checkExternalPrt(ext);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenth = INTEGER(n);
+	double *a = REAL(alpha);
+	cublascall(cublasDscal(handle, *lenth, a, R_ExternalPtrAddr(ext), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return ext;
+}
+
+
 /*
 define function to calculate the Euclidean norm of vector
 input is a R's external pointer pointing to GPU vector
