@@ -253,6 +253,97 @@ SEXP scaleGPU(SEXP input, SEXP n, SEXP alpha)
 
 /*CULBLAS level 2 functions*/
 
+
+/*
+define function to perform the matrix vector multiplication
+y = a op ( A ) x + ß y where A is a m × n matrix stored in column-major format,
+x and y are vectors, and a and ß are scalars. 
+*/
+
+
+SEXP gemvGPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha, 
+             SEXP beta, SEXP m, SEXP n, SEXP trans)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	checkExternalPrt(exty);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthM=INTEGER(m);
+	int *lenthN=INTEGER(n);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *t = REAL(trans);
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	cublascall(cublasDgemv(handle, transa, *lenthM, *lenthN, a, 
+		    R_ExternalPtrAddr(extA), *lenthM, 
+		    R_ExternalPtrAddr(extx), 1, b, 
+		    R_ExternalPtrAddr(exty), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return(exty); 
+}
+
+
+/*
+define function to perform the banded matrix vector multiplication
+y = a op ( A ) x + ß y where A is a banded m × n matrix stored in 
+column-major format, x and y are vectors, and a and ß are scalars. 
+*/
+
+
+SEXP gbmvGPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha, 
+             SEXP beta, SEXP m, SEXP n, SEXP kl, SEXP ku, SEXP trans)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	checkExternalPrt(exty);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthM=INTEGER(m);
+	int *lenthN=INTEGER(n);
+	int *bkl=INTEGER(kl);
+	int *bku=INTEGER(ku);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *t = REAL(trans);
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	cublascall(cublasDgbmv(handle, transa, *lenthM, *lenthN, 
+                  *bkl, *bku, a, R_ExternalPtrAddr(extA), *lenthM, 
+		    R_ExternalPtrAddr(extx), 1, b, 
+		    R_ExternalPtrAddr(exty), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return(exty); 
+}
+
+
+/*
+define function to perform the the rank-1 update A = a x y T + A,
+where A is a m × n matrix stored in column-major format, 
+x and y are vectors, and a is a scalar
+*/
+
+SEXP gerGPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha, 
+             SEXP m, SEXP n)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	checkExternalPrt(exty);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthM=INTEGER(m);
+	int *lenthN=INTEGER(n);
+	double *a = REAL(alpha);
+	cublascall(cublasDger(handle, *lenthM, *lenthN, a,  
+		    R_ExternalPtrAddr(extx), 1,  
+		    R_ExternalPtrAddr(exty), 1,
+		    R_ExternalPtrAddr(extA), *lenthM));
+	cublascall(cublasDestroy_v2(handle));
+	return(extA); 
+}
+
+
 /*
 define function to calculate the element-wise addition
 of 2 vectors. Input is 2 R's external pointers pointing to 2 GPU vectors

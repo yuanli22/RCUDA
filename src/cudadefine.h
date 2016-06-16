@@ -107,3 +107,17 @@ SEXP  checkExternalPrt(SEXP input)
 	}
 
 }
+
+
+/*
+# convert input integer to cublasOperation_t
+*/
+cublasOperation_t cublasop(double input)
+{
+	cublasOperation_t transa;
+	if (input == 1){
+	transa = CUBLAS_OP_N;    
+ 	} else if (input == 2){ transa = CUBLAS_OP_T;
+	}  else if (input == 3){ transa = CUBLAS_OP_C;}
+       return transa;
+}
