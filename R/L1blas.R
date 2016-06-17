@@ -83,7 +83,7 @@ asumgpu<-function(input)
 #' by using CUDA cublas function cublasDaxpy
 #' @param x list consisting of R external GPU pointer and dimension
 #' @param y list consisting of R external GPU pointer and dimension 
-#' @param alpha scale factor alpha
+#' @param alpha scale factor alpha; default 1
 #' @return updated y vector/matrix
 #' @seealso \code{\link{scalegpu}} 
 #' @export
@@ -93,7 +93,7 @@ asumgpu<-function(input)
 #' b_gpu <- creategpu(a)
 #' axpygpu(a_gpu, b_gpu, 1) 
 
-axpygpu<-function(x, y, alpha)
+axpygpu<-function(x, y, alpha = 1)
 {
     checkGPU(x)
     checkGPU(y)
@@ -160,7 +160,7 @@ copygpu<-function(x, y)
 #' and overwrites it with the result 
 #' by using CUDA cublas function cublasDscal
 #' @param x list consisting of R external GPU pointer and dimension
-#' @param alpha scale factor alpha
+#' @param alpha scale factor alpha, default 1
 #' @return scaled vector/matrix
 #' @seealso \code{\link{scalegpu}} 
 #' @export
@@ -169,7 +169,7 @@ copygpu<-function(x, y)
 #' a_gpu <- creategpu(a)
 #' scalgpu(a_gpu, 2) 
 
-scalgpu<-function(x, alpha)
+scalgpu<-function(x, alpha = 1)
 {
     checkGPU(x)
     ext <- .Call(

@@ -117,7 +117,39 @@ cublasOperation_t cublasop(double input)
 	cublasOperation_t transa;
 	if (input == 1){
 	transa = CUBLAS_OP_N;    
- 	} else if (input == 2){ transa = CUBLAS_OP_T;
-	}  else if (input == 3){ transa = CUBLAS_OP_C;}
+ 	} else if (input == 2) { 
+                transa = CUBLAS_OP_T;
+	}  else if (input == 3) { 
+                transa = CUBLAS_OP_C;}
        return transa;
+}
+
+
+/*
+# convert input integer to cublasFillMode_t
+*/
+cublasFillMode_t cublasfillmod(double input)
+{
+	cublasFillMode_t fillmod;
+	if (input == 1){
+	fillmod = CUBLAS_FILL_MODE_UPPER;    
+ 	} else if (input == 2) { 
+         fillmod = CUBLAS_FILL_MODE_LOWER;
+	}  
+       return fillmod;
+}
+
+
+/*
+# convert input integer to cublasDiagType_t
+*/
+cublasDiagType_t cublasdiagtype(double input)
+{
+	cublasDiagType_t diagtype;
+	if (input == 1){
+	diagtype = CUBLAS_SIDE_LEFT;    
+ 	} else if (input == 2) { 
+         diagtype = CUBLAS_SIDE_RIGHT;
+	}  
+       return diagtype;
 }

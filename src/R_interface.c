@@ -253,13 +253,11 @@ SEXP scaleGPU(SEXP input, SEXP n, SEXP alpha)
 
 /*CULBLAS level 2 functions*/
 
-
 /*
 define function to perform the matrix vector multiplication
 y = a op ( A ) x + ß y where A is a m × n matrix stored in column-major format,
 x and y are vectors, and a and ß are scalars. 
 */
-
 
 SEXP gemvGPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha, 
              SEXP beta, SEXP m, SEXP n, SEXP trans)
@@ -291,7 +289,6 @@ y = a op ( A ) x + ß y where A is a banded m × n matrix stored in
 column-major format, x and y are vectors, and a and ß are scalars. 
 */
 
-
 SEXP gbmvGPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha, 
              SEXP beta, SEXP m, SEXP n, SEXP kl, SEXP ku, SEXP trans)
 {
@@ -311,6 +308,65 @@ SEXP gbmvGPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha,
 	transa = cublasop(*t);
 	cublascall(cublasDgbmv(handle, transa, *lenthM, *lenthN, 
                   *bkl, *bku, a, R_ExternalPtrAddr(extA), *lenthM, 
+		    R_ExternalPtrAddr(extx), 1, b, 
+		    R_ExternalPtrAddr(exty), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return(exty); 
+}
+
+
+/*
+define function to perform the symmetric banded matrix vector multiplication
+y = a op ( A ) x + ß y where A is a symmetric banded n × n matrix stored in 
+column-major format, x and y are vectors, and a and ß are scalars. 
+*/
+
+SEXP sbmvGPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha, 
+             SEXP beta, SEXP n, SEXP k, SEXP fillmod)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	checkExternalPrt(exty);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthN=INTEGER(n);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *t = REAL(fillmod);
+	int *bk=INTEGER(k);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*t);
+	cublascall(cublasDsbmv(handle, fillmode, *lenthN, *bk, 
+                  a, R_ExternalPtrAddr(extA), *lenthN, 
+		    R_ExternalPtrAddr(extx), 1, b, 
+		    R_ExternalPtrAddr(exty), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return(exty); 
+}
+
+
+/*
+define function to perform the symmetric matrix vector multiplication
+y = a op ( A ) x + ß y where A is a symmetric n × n matrix stored in 
+column-major format, x and y are vectors, and a and ß are scalars. 
+*/
+
+SEXP symvGPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha, 
+             SEXP beta, SEXP n, SEXP fillmod)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	checkExternalPrt(exty);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthN=INTEGER(n);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *t = REAL(fillmod);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*t);
+	cublascall(cublasDsymv(handle, fillmode, *lenthN, 
+                  a, R_ExternalPtrAddr(extA), *lenthN, 
 		    R_ExternalPtrAddr(extx), 1, b, 
 		    R_ExternalPtrAddr(exty), 1));
 	cublascall(cublasDestroy_v2(handle));
@@ -341,6 +397,188 @@ SEXP gerGPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha,
 		    R_ExternalPtrAddr(extA), *lenthM));
 	cublascall(cublasDestroy_v2(handle));
 	return(extA); 
+}
+
+
+/*
+define function to perform the the symmetric rank-1 update A = a x x T + A,
+where A is a n × n matrix stored in column-major format, 
+x is vector, and a is a scalar
+*/
+
+SEXP syrGPU(SEXP extA, SEXP extx, SEXP alpha, 
+             SEXP n, SEXP fillmod)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthN=INTEGER(n);
+	double *t = REAL(fillmod);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*t);
+	double *a = REAL(alpha);
+	cublascall(cublasDsyr(handle, fillmode, *lenthN, a,  
+		    R_ExternalPtrAddr(extx), 1,  
+		    R_ExternalPtrAddr(extA), *lenthN));
+	cublascall(cublasDestroy_v2(handle));
+	return(extA); 
+}
+
+
+/*
+define function to perform the the symmetric rank-2 update 
+A = a x y T + x y T + A, where A is a n × n matrix stored 
+in column-major format, x and y are vectors, and a is a scalar
+*/
+
+SEXP syr2GPU(SEXP extA, SEXP extx, SEXP exty, SEXP alpha, 
+             SEXP n, SEXP fillmod)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	checkExternalPrt(exty);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthN=INTEGER(n);
+	double *t = REAL(fillmod);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*t);
+	double *a = REAL(alpha);
+	cublascall(cublasDsyr2(handle, fillmode, *lenthN, a,  
+		    R_ExternalPtrAddr(extx), 1,  
+		    R_ExternalPtrAddr(exty), 1,
+		    R_ExternalPtrAddr(extA), *lenthN));
+	cublascall(cublasDestroy_v2(handle));
+	return(extA); 
+}
+
+
+/*
+define function to perform the triangular banded matrix vector multiplication
+x =  op ( A ) x  where A is a triangular banded n × n matrix stored in 
+column-major format, x is a vector.
+*/
+
+SEXP tbmvGPU(SEXP extA, SEXP extx, SEXP n, SEXP k, SEXP fillmod,
+             SEXP trans, SEXP diag)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthN=INTEGER(n);
+	int *bk=INTEGER(k);
+	double *t = REAL(trans);
+	double *f = REAL(fillmod);
+	double *d = REAL(diag);
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*f);
+	cublasDiagType_t diagmode;
+	diagmode = cublasfillmod(*d);
+	cublascall(cublasDtbmv(handle, fillmode, transa, diagmode, *lenthN, *bk, 
+                  R_ExternalPtrAddr(extA), *lenthN, 
+		    R_ExternalPtrAddr(extx), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return(extx); 
+}
+
+
+/*
+define function to solve the triangular banded linear system
+ with a single right-hand-side
+op ( A ) x = b,  where A is a triangular banded n × n matrix stored in 
+column-major format, x and b are vectors.
+*/
+
+SEXP tbsvGPU(SEXP extA, SEXP extx, SEXP n, SEXP k, SEXP fillmod,
+             SEXP trans, SEXP diag)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthN=INTEGER(n);
+	int *bk=INTEGER(k);
+	double *t = REAL(trans);
+	double *f = REAL(fillmod);
+	double *d = REAL(diag);
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*f);
+	cublasDiagType_t diagmode;
+	diagmode = cublasfillmod(*d);
+	cublascall(cublasDtbsv(handle, fillmode, transa, diagmode, *lenthN, *bk, 
+                  R_ExternalPtrAddr(extA), *lenthN, 
+		    R_ExternalPtrAddr(extx), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return(extx); 
+}
+
+
+/*
+define function to perform triangular matrix-vector multiplication
+x = op ( A ) x,  where A is a triangular n × n matrix stored in 
+column-major format, x is vector.
+*/
+
+SEXP trmvGPU(SEXP extA, SEXP extx, SEXP n, SEXP fillmod,
+             SEXP trans, SEXP diag)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthN=INTEGER(n);
+	double *t = REAL(trans);
+	double *f = REAL(fillmod);
+	double *d = REAL(diag);
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*f);
+	cublasDiagType_t diagmode;
+	diagmode = cublasfillmod(*d);
+	cublascall(cublasDtrmv(handle, fillmode, transa, diagmode, *lenthN, 
+                  R_ExternalPtrAddr(extA), *lenthN, 
+		    R_ExternalPtrAddr(extx), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return(extx); 
+}
+
+
+/*
+define function to solve the triangular linear system
+with a single right-hand-side
+op ( A ) x = b,  where A is a triangular n × n matrix stored in 
+column-major format, x and b are vectors.
+*/
+
+SEXP trsvGPU(SEXP extA, SEXP extx, SEXP n, SEXP fillmod,
+             SEXP trans, SEXP diag)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthN=INTEGER(n);
+	double *t = REAL(trans);
+	double *f = REAL(fillmod);
+	double *d = REAL(diag);
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*f);
+	cublasDiagType_t diagmode;
+	diagmode = cublasfillmod(*d);
+	cublascall(cublasDtrsv(handle, fillmode, transa, diagmode, *lenthN, 
+                  R_ExternalPtrAddr(extA), *lenthN, 
+		    R_ExternalPtrAddr(extx), 1));
+	cublascall(cublasDestroy_v2(handle));
+	return(extx); 
 }
 
 
@@ -464,7 +702,48 @@ SEXP mvGPU(SEXP extM, SEXP extV, SEXP m, SEXP n)
 	return(ext); 
 }
 
+
 /*CULBLAS level 3 functions*/
+
+
+/*
+define function to calculate the matrix-matrix multiplication
+C = a op ( A ) op ( B ) + b C where a and b are scalars, 
+and A , B and C are matrices stored in column-major format 
+with dimensions op ( A ) m × k , op ( B ) k × n and C m × n 
+, respectively.
+Input is 3 R's external pointers pointing to 3 GPU matrices
+output is R's external pointer pointing to GPU
+matrix(device)
+*/
+SEXP gemmGPU(SEXP extA, SEXP extB, SEXP extC, SEXP m, SEXP n, SEXP k,
+             SEXP transA, SEXP transB, SEXP alpha, SEXP beta)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extB);
+	checkExternalPrt(extC);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *lenthM = INTEGER(m);
+	int *lenthN = INTEGER(n);
+	int *lenthK = INTEGER(k);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *tA = REAL(transA);
+	double *tB = REAL(transB);
+	cublasOperation_t transa;
+	cublasOperation_t transb;
+	transa = cublasop(*tA);
+	transb = cublasop(*tB);
+	cublascall(cublasDgemm(handle, transa, transb, *lenthM, 
+		    *lenthN, *lenthK, a, R_ExternalPtrAddr(extA),
+		    *lenthM, R_ExternalPtrAddr(extB),
+		    *lenthK, b, R_ExternalPtrAddr(extC), *lenthM));
+	cublascall(cublasDestroy_v2(handle));
+	return(extC);
+}
+
+
 /*
 define function to calculate the matrix times matrix
 Input is 2 R's external pointers pointing to 2 GPU vectors

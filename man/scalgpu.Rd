@@ -4,12 +4,12 @@
 \alias{scalgpu}
 \title{scalgpu}
 \usage{
-scalgpu(x, alpha)
+scalgpu(x, alpha = 1)
 }
 \arguments{
 \item{x}{list consisting of R external GPU pointer and dimension}
 
-\item{alpha}{scale factor alpha}
+\item{alpha}{scale factor alpha, default 1}
 }
 \value{
 scaled vector/matrix

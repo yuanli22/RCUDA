@@ -4,14 +4,14 @@
 \alias{axpygpu}
 \title{axpygpu}
 \usage{
-axpygpu(x, y, alpha)
+axpygpu(x, y, alpha = 1)
 }
 \arguments{
 \item{x}{list consisting of R external GPU pointer and dimension}
 
 \item{y}{list consisting of R external GPU pointer and dimension}
 
-\item{alpha}{scale factor alpha}
+\item{alpha}{scale factor alpha; default 1}
 }
 \value{
 updated y vector/matrix
