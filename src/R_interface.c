@@ -716,29 +716,33 @@ Input is 3 R's external pointers pointing to 3 GPU matrices
 output is R's external pointer pointing to GPU
 matrix(device)
 */
-SEXP gemmGPU(SEXP extA, SEXP extB, SEXP extC, SEXP m, SEXP n, SEXP k,
-             SEXP transA, SEXP transB, SEXP alpha, SEXP beta)
+SEXP gemmGPU(SEXP extA, SEXP extB, SEXP extC, SEXP lda, SEXP ldb, SEXP ldc,
+             SEXP m, SEXP n, SEXP k, SEXP transA, SEXP transB,
+             SEXP alpha, SEXP beta)
 {
 	checkExternalPrt(extA);
 	checkExternalPrt(extB);
 	checkExternalPrt(extC);
 	cublasHandle_t handle;
 	cublascall(cublasCreate_v2(&handle));
-	int *lenthM = INTEGER(m);
-	int *lenthN = INTEGER(n);
-	int *lenthK = INTEGER(k);
+	int *ldA = INTEGER(lda);
+	int *ldB = INTEGER(ldb);
+	int *ldC = INTEGER(ldc);
 	double *a = REAL(alpha);
 	double *b = REAL(beta);
 	double *tA = REAL(transA);
 	double *tB = REAL(transB);
+	int *rA = INTEGER(m);
+	int *cB = INTEGER(n);
+	int *cA = INTEGER(k);     
 	cublasOperation_t transa;
 	cublasOperation_t transb;
 	transa = cublasop(*tA);
 	transb = cublasop(*tB);
-	cublascall(cublasDgemm(handle, transa, transb, *lenthM, 
-		    *lenthN, *lenthK, a, R_ExternalPtrAddr(extA),
-		    *lenthM, R_ExternalPtrAddr(extB),
-		    *lenthK, b, R_ExternalPtrAddr(extC), *lenthM));
+	cublascall(cublasDgemm(handle, transa, transb, *rA, 
+		    *cB, *cA, a, R_ExternalPtrAddr(extA),
+		    *ldA, R_ExternalPtrAddr(extB),
+		    *ldB, b, R_ExternalPtrAddr(extC), *ldC));
 	cublascall(cublasDestroy_v2(handle));
 	return(extC);
 }

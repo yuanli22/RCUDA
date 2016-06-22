@@ -44,7 +44,7 @@ gemmgpu <- function(A, B, C, transa = 1, transb = 1, alpha = 1, beta = 0)
     n <- as.integer(B[3])
     k <- as.integer(A[3])
     }
-  if ((transa == !1) && (transb == 1)) {
+  if ((transa != 1) && (transb == 1)) {
     if (as.integer(A[3]) != as.integer(C[2]))
       stop ("A and C dimensions not match")
     if (as.integer(A[2]) != as.integer(B[2]))
@@ -55,7 +55,7 @@ gemmgpu <- function(A, B, C, transa = 1, transb = 1, alpha = 1, beta = 0)
     n <- as.integer(B[3])
     k <- as.integer(A[2])
     }
-  if ((transa == 1) && (transb == !1)) {
+  if ((transa == 1) && (transb != 1)) {
     if (as.integer(A[2]) != as.integer(C[2]))
       stop ("A and C dimensions not match")
     if (as.integer(A[3]) != as.integer(B[3]))
@@ -66,7 +66,7 @@ gemmgpu <- function(A, B, C, transa = 1, transb = 1, alpha = 1, beta = 0)
     n <- as.integer(B[2])
     k <- as.integer(A[3])
     }
-  if ((transa == !1) && (transb == !1)) {
+  if ((transa != 1) && (transb != 1)) {
     if (as.integer(A[3]) != as.integer(C[2]))
       stop ("A and C dimensions not match")
     if (as.integer(A[2]) != as.integer(B[3]))
@@ -82,9 +82,12 @@ gemmgpu <- function(A, B, C, transa = 1, transb = 1, alpha = 1, beta = 0)
                  A$ptr,
                  B$ptr,
                  C$ptr,
+                 as.integer(A[2]),
+                 as.integer(B[2]),
+                 as.integer(C[2]),	
                  m,
                  n,
-                 k,
+                 k,	
                  as.numeric(transa),
                  as.numeric(transb),
                  as.numeric(alpha),
