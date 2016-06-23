@@ -147,9 +147,24 @@ cublasDiagType_t cublasdiagtype(double input)
 {
 	cublasDiagType_t diagtype;
 	if (input == 1){
-	diagtype = CUBLAS_SIDE_LEFT;    
+	diagtype = CUBLAS_DIAG_NON_UNIT;    
  	} else if (input == 2) { 
-         diagtype = CUBLAS_SIDE_RIGHT;
+         diagtype = CUBLAS_DIAG_UNIT;
 	}  
        return diagtype;
+}
+
+
+/*
+# convert input integer to cublasSideMode_t side
+*/
+cublasSideMode_t cublasSideMode(double input)
+{
+	cublasSideMode_t sidemode;
+	if (input == 1){
+	sidemode = CUBLAS_SIDE_LEFT;    
+ 	} else if (input == 2) { 
+         sidemode = CUBLAS_SIDE_RIGHT;
+	}  
+       return sidemode;
 }

@@ -477,7 +477,7 @@ SEXP tbmvGPU(SEXP extA, SEXP extx, SEXP n, SEXP k, SEXP fillmod,
 	cublasFillMode_t fillmode;
 	fillmode = cublasfillmod(*f);
 	cublasDiagType_t diagmode;
-	diagmode = cublasfillmod(*d);
+	diagmode = cublasdiagtype(*d);
 	cublascall(cublasDtbmv(handle, fillmode, transa, diagmode, *lenthN, *bk, 
                   R_ExternalPtrAddr(extA), *lenthN, 
 		    R_ExternalPtrAddr(extx), 1));
@@ -510,7 +510,7 @@ SEXP tbsvGPU(SEXP extA, SEXP extx, SEXP n, SEXP k, SEXP fillmod,
 	cublasFillMode_t fillmode;
 	fillmode = cublasfillmod(*f);
 	cublasDiagType_t diagmode;
-	diagmode = cublasfillmod(*d);
+	diagmode = cublasdiagtype(*d);
 	cublascall(cublasDtbsv(handle, fillmode, transa, diagmode, *lenthN, *bk, 
                   R_ExternalPtrAddr(extA), *lenthN, 
 		    R_ExternalPtrAddr(extx), 1));
@@ -541,7 +541,7 @@ SEXP trmvGPU(SEXP extA, SEXP extx, SEXP n, SEXP fillmod,
 	cublasFillMode_t fillmode;
 	fillmode = cublasfillmod(*f);
 	cublasDiagType_t diagmode;
-	diagmode = cublasfillmod(*d);
+	diagmode = cublasdiagtype(*d);
 	cublascall(cublasDtrmv(handle, fillmode, transa, diagmode, *lenthN, 
                   R_ExternalPtrAddr(extA), *lenthN, 
 		    R_ExternalPtrAddr(extx), 1));
@@ -573,7 +573,7 @@ SEXP trsvGPU(SEXP extA, SEXP extx, SEXP n, SEXP fillmod,
 	cublasFillMode_t fillmode;
 	fillmode = cublasfillmod(*f);
 	cublasDiagType_t diagmode;
-	diagmode = cublasfillmod(*d);
+	diagmode = cublasdiagtype(*d);
 	cublascall(cublasDtrsv(handle, fillmode, transa, diagmode, *lenthN, 
                   R_ExternalPtrAddr(extA), *lenthN, 
 		    R_ExternalPtrAddr(extx), 1));
@@ -749,6 +749,205 @@ SEXP gemmGPU(SEXP extA, SEXP extB, SEXP extC, SEXP lda, SEXP ldb, SEXP ldc,
 
 
 /*
+define function to calculate the symmetric matrix-matrix multiplication
+C = a  A  B  + b C where a and b are scalars, 
+and A , B and C are sysmmetric matrices stored in column-major format 
+with dimensions  A  m × m ,  B and C are m × n 
+Input is 3 R's external pointers pointing to 3 GPU matrices
+output is R's external pointer pointing to GPU
+matrix(device)
+*/
+SEXP symmGPU(SEXP extA, SEXP extB, SEXP extC, SEXP lda, SEXP ldb, SEXP ldc,
+             SEXP fillmod, SEXP side, SEXP m, SEXP n, SEXP alpha, SEXP beta)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extB);
+	checkExternalPrt(extC);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *ldA = INTEGER(lda);
+	int *ldB = INTEGER(ldb);
+	int *ldC = INTEGER(ldc);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *sideMode = REAL(side);	
+	cublasSideMode_t sidemode;
+	sidemode = cublasSideMode(*sideMode);
+	double *f = REAL(fillmod);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*f);
+	int *rA = INTEGER(m);
+	int *cB = INTEGER(n);    
+	cublascall(cublasDsymm(handle, sidemode, fillmode, *rA, 
+		    *cB, a, R_ExternalPtrAddr(extA),
+		    *ldA, R_ExternalPtrAddr(extB),
+		    *ldB, b, R_ExternalPtrAddr(extC), *ldC));
+	cublascall(cublasDestroy_v2(handle));
+	return(extC);
+}
+
+
+/*
+define function to perform the symmetric rank k update
+C = a op(A) op(A)T  + b C where a and b are scalars, 
+A is matrix with dimension n x k, C is sysmmetric matrix stored in column-major format  
+Input is 3 R's external pointers pointing to 3 GPU matrices
+output is R's external pointer pointing to GPU
+matrix(device)
+*/
+SEXP syrkGPU(SEXP extA, SEXP extC, SEXP lda, SEXP ldc,
+             SEXP fillmod, SEXP trans, SEXP n, SEXP k, SEXP alpha, SEXP beta)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extC);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *ldA = INTEGER(lda);
+	int *ldC = INTEGER(ldc);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *t = REAL(trans);	
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	double *f = REAL(fillmod);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*f);
+	int *rA = INTEGER(n);
+	int *cA = INTEGER(k);    
+	cublascall(cublasDsyrk(handle, fillmode, transa, *rA, 
+		    *cA, a, R_ExternalPtrAddr(extA),
+		    *ldA, b, R_ExternalPtrAddr(extC), *ldC));
+	cublascall(cublasDestroy_v2(handle));
+	return(extC);
+}
+
+
+/*
+define function to perform the symmetric rank 2k update
+C = a(op(A) op(B)T + op(B) op(A)T) + b C where a and b are scalars, 
+A and B are matrices with dimensions n x k and n x k,respectivley. 
+C is sysmmetric matrix stored in column-major format  
+Input is 3 R's external pointers pointing to 3 GPU matrices
+output is R's external pointer pointing to GPU
+matrix(device)
+*/
+SEXP syr2kGPU(SEXP extA, SEXP extB, SEXP extC, SEXP lda, SEXP ldb, SEXP ldc,
+             SEXP fillmod, SEXP trans, SEXP n, SEXP k, SEXP alpha, SEXP beta)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extB);
+	checkExternalPrt(extC);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *ldA = INTEGER(lda);
+	int *ldB = INTEGER(ldb);
+	int *ldC = INTEGER(ldc);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *t = REAL(trans);	
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	double *f = REAL(fillmod);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*f);
+	int *rA = INTEGER(n);
+	int *cA = INTEGER(k);    
+	cublascall(cublasDsyr2k(handle, fillmode, transa, *rA, 
+		    *cA, a, R_ExternalPtrAddr(extA),
+		    *ldA, R_ExternalPtrAddr(extB), *ldB, 
+                  b, R_ExternalPtrAddr(extC), *ldC));
+	cublascall(cublasDestroy_v2(handle));
+	return(extC);
+}
+
+
+/*
+define function to calculate the triangle matrix-matrix multiplication
+C = a op(A) B, where a is scalar 
+and A is triangle matrix stored in column-major format 
+B and C are m × n matrices
+Input is 3 R's external pointers pointing to 3 GPU matrices
+output is R's external pointer pointing to GPU
+matrix(device)
+*/
+SEXP trmmGPU(SEXP extA, SEXP extB, SEXP extC, SEXP lda, SEXP ldb, SEXP ldc,
+             SEXP trans, SEXP fillmod, SEXP diag, SEXP side, SEXP m, SEXP n, SEXP alpha)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extB);
+	checkExternalPrt(extC);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *ldA = INTEGER(lda);
+	int *ldB = INTEGER(ldb);
+	int *ldC = INTEGER(ldc);
+	double *a = REAL(alpha);
+	double *t = REAL(trans);	
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	double *sideMode = REAL(side);	
+	cublasSideMode_t sidemode;
+	sidemode = cublasSideMode(*sideMode);
+	double *f = REAL(fillmod);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*f);
+	double *d = REAL(diag);
+	cublasDiagType_t diagmode;
+	diagmode = cublasdiagtype(*d);
+	int *rA = INTEGER(m);
+	int *cB = INTEGER(n);    
+	cublascall(cublasDtrmm(handle, sidemode, fillmode, transa, diagmode,  
+		    *rA, *cB, a, R_ExternalPtrAddr(extA),
+		    *ldA, R_ExternalPtrAddr(extB),
+		    *ldB, R_ExternalPtrAddr(extC), *ldC));
+	cublascall(cublasDestroy_v2(handle));
+	return(extC);
+}
+
+
+/*
+define function to solve the triangle linear system with multiple right-hand-sides
+op(A) X = a B or X op(A)= a B, where a is scalar 
+and A is triangle matrix stored in column-major format 
+X and B are m × n matrices
+Input is 3 R's external pointers pointing to 3 GPU matrices
+output is R's external pointer pointing to GPU
+matrix(device)
+*/
+SEXP trsmGPU(SEXP extA, SEXP extB, SEXP lda, SEXP ldb, 
+             SEXP trans, SEXP fillmod, SEXP diag, SEXP side, SEXP m, SEXP n, SEXP alpha)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extB);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *ldA = INTEGER(lda);
+	int *ldB = INTEGER(ldb);
+	double *a = REAL(alpha);
+	double *t = REAL(trans);	
+	cublasOperation_t transa;
+	transa = cublasop(*t);
+	double *sideMode = REAL(side);	
+	cublasSideMode_t sidemode;
+	sidemode = cublasSideMode(*sideMode);
+	double *f = REAL(fillmod);
+	cublasFillMode_t fillmode;
+	fillmode = cublasfillmod(*f);
+	double *d = REAL(diag);
+	cublasDiagType_t diagmode;
+	diagmode = cublasdiagtype(*d);
+	int *rA = INTEGER(m);
+	int *cB = INTEGER(n);    
+	cublascall(cublasDtrsm(handle, sidemode, fillmode, transa, diagmode,  
+		    *rA, *cB, a, R_ExternalPtrAddr(extA),
+		    *ldA, R_ExternalPtrAddr(extB),
+		    *ldB));
+	cublascall(cublasDestroy_v2(handle));
+	return(extB);
+}
+
+
+/*
 define function to calculate the matrix times matrix
 Input is 2 R's external pointers pointing to 2 GPU vectors
 and the dimensions of the 2 matrices, 
@@ -813,6 +1012,83 @@ SEXP tGPU(SEXP extM, SEXP m, SEXP n)
 }
 
 /*CULBLAS extension functions*/
+
+
+/*
+define function to performs the matrix-matrix addition/transposition
+C = a op ( A ) + b op ( B ) where a and b are scalars, 
+and A , B and C are matrices stored in column-major format 
+with dimensions m x n
+Input is 3 R's external pointers pointing to 3 GPU matrices
+output is R's external pointer pointing to GPU
+matrix(device)
+*/
+SEXP geamGPU(SEXP extA, SEXP extB, SEXP extC, SEXP lda, SEXP ldb, SEXP ldc,
+             SEXP m, SEXP n, SEXP transA, SEXP transB,
+             SEXP alpha, SEXP beta)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extB);
+	checkExternalPrt(extC);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *ldA = INTEGER(lda);
+	int *ldB = INTEGER(ldb);
+	int *ldC = INTEGER(ldc);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *tA = REAL(transA);
+	double *tB = REAL(transB);
+	int *rA = INTEGER(m);
+	int *cB = INTEGER(n);   
+	cublasOperation_t transa;
+	cublasOperation_t transb;
+	transa = cublasop(*tA);
+	transb = cublasop(*tB);
+	cublascall(cublasDgeam(handle, transa, transb, *rA, 
+		    *cB, a, R_ExternalPtrAddr(extA),
+		    *ldA, R_ExternalPtrAddr(extB),
+		    *ldB, b, R_ExternalPtrAddr(extC), *ldC));
+	cublascall(cublasDestroy_v2(handle));
+	return(extC);
+}
+
+
+/*
+define function to performs the matrix-matrix multiplication
+C = A diag(X) or C = diag(X) A where a is scalar, 
+A and C are matrices stored in column-major format 
+with dimensions m x n, X is a vector of size n or m depends on 
+CUBLAS_SIDE setup.
+Input is 3 R's external pointers pointing to 3 GPU matrices
+output is R's external pointer pointing to GPU
+matrix(device)
+*/
+SEXP dgmmGPU(SEXP extA, SEXP extx, SEXP extC, SEXP lda, SEXP incx, SEXP ldc,
+             SEXP m, SEXP n, SEXP side)
+{
+	checkExternalPrt(extA);
+	checkExternalPrt(extx);
+	checkExternalPrt(extC);
+	cublasHandle_t handle;
+	cublascall(cublasCreate_v2(&handle));
+	int *ldA = INTEGER(lda);
+	int *incX = INTEGER(incx);
+	int *ldC = INTEGER(ldc);
+	int *rA = INTEGER(m);
+	int *cB = INTEGER(n);   
+	double *sideMode = REAL(side);	
+	cublasSideMode_t sidemode;
+	sidemode = cublasSideMode(*sideMode);
+	cublascall(cublasDdgmm(handle, sidemode, *rA, 
+		    *cB, R_ExternalPtrAddr(extA),
+		    *ldA, R_ExternalPtrAddr(extx),
+		    *incX, R_ExternalPtrAddr(extC), *ldC));
+	cublascall(cublasDestroy_v2(handle));
+	return(extC);
+}
+
+
 /*
 define function to inverse a square matrix by LU decomposition
 Input is a R's external pointers pointing to a GPU vectors
