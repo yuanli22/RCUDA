@@ -18,8 +18,8 @@ updated y vector/matrix
 }
 \description{
 This function multiplies the vector x by the scalar a and adds it 
-to the vector y overwriting the latest vector with the result 
-by using CUDA cublas function cublasDaxpy
+to the vector y, and overwrites y as the result.  
+by using CUDA cublas function cublasDaxpy. y = a x + y
 }
 \examples{
 a <- 1:4
@@ -28,6 +28,6 @@ b_gpu <- creategpu(a)
 axpygpu(a_gpu, b_gpu, 1) 
 }
 \seealso{
-\code{\link{scalegpu}}
+\code{\link{scalgpu}}
 }
 

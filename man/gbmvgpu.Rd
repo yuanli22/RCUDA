@@ -4,14 +4,11 @@
 \alias{gbmvgpu}
 \title{gbmvgpu}
 \usage{
-gbmvgpu(A, x, y, kl, ku, alpha = 1, beta = 0, trans = 1)
+gbmvgpu(trans = 1, kl, ku, alpha = 1, A, x, beta = 0, y)
 }
 \arguments{
-\item{A}{input matrix; list of R external GPU pointer and dimension}
-
-\item{x}{input vector; list of R external GPU pointer and dimension}
-
-\item{y}{input/output vector; list of R external GPU pointer and dimension}
+\item{trans}{matrix A transpose operator, 1 (non-transpose), 2 (transpose),
+3 (conjugate transpose); default at 1 (non-transpose)}
 
 \item{kl}{number of subdiagonals}
 
@@ -19,10 +16,13 @@ gbmvgpu(A, x, y, kl, ku, alpha = 1, beta = 0, trans = 1)
 
 \item{alpha}{scale factor a of banded matrix A; default 1}
 
+\item{A}{input matrix; list of R external GPU pointer and dimension}
+
+\item{x}{input vector; list of R external GPU pointer and dimension}
+
 \item{beta}{scale factor b of vector y; default 0}
 
-\item{trans}{matrix A transpose operator, 1 (non-transpose), 2 (transpose),
-3 (conjugate transpose); default at 1 (non-transpose)}
+\item{y}{input/output vector; list of R external GPU pointer and dimension}
 }
 \value{
 vector y, a list consisting of

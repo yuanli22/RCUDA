@@ -132,9 +132,9 @@ cublasFillMode_t cublasfillmod(double input)
 {
 	cublasFillMode_t fillmod;
 	if (input == 1){
-	fillmod = CUBLAS_FILL_MODE_UPPER;    
+	fillmod = CUBLAS_FILL_MODE_LOWER;    
  	} else if (input == 2) { 
-         fillmod = CUBLAS_FILL_MODE_LOWER;
+         fillmod = CUBLAS_FILL_MODE_UPPER;
 	}  
        return fillmod;
 }

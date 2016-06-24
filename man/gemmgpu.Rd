@@ -4,7 +4,7 @@
 \alias{gemmgpu}
 \title{gemmgpu}
 \usage{
-gemmgpu(A, B, C, transa = 1, transb = 1, alpha = 1, beta = 0)
+gemmgpu(transa = 1, transb = 1, alpha = 1, A, B, beta = 0, C)
 }
 \arguments{
 \item{A}{input matrix; list of R external GPU pointer and dimension}
@@ -17,8 +17,8 @@ gemmgpu(A, B, C, transa = 1, transb = 1, alpha = 1, beta = 0)
 updated matrix C, a list consisting of
 \itemize{
 \item{ptr: }{GPU pointer}
-\item{m: }{matrix X's number of rows}
-\item{n: }{matrix Y's number of columns}
+\item{m: }{matrix C's number of rows}
+\item{n: }{matrix C's number of columns}
 }
 }
 \description{
@@ -27,14 +27,13 @@ C = a op ( A ) op ( B ) + b C
 by using CUDA cublas function cublasDgemm
 }
 \examples{
-a <- 1:6
-b <- 2:7
-a_gpu <- creategpu(a, 2, 3)
-b_gpu <- creategpu(b, 3, 2)
-mmgpu(a_gpu, b_gpu) -> c_gpu
-gathergpu(c_gpu)
+A_gpu <- creategpu(1:6, 3, 2)
+B_gpu <- creategpu(1:6, 3, 2)
+C_gpu <- creategpu(1:4, 2, 2)
+gemmgpu(2, 1, 1, A_gpu, B_gpu, beta=1, C_gpu)
+gathergpu(C_gpu)
 }
 \seealso{
-\code{\link{mmgpu}}
+\code{\link{gemvgpu}}
 }
 

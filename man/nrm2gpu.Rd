@@ -19,13 +19,13 @@ vector/matrix by using CUDA cublas function cublasDnrm2
 \examples{
 a <- 1:4
 a_gpu <- creategpu(a)
-norm2gpu(a_gpu) 
+nrm2gpu(a_gpu) 
 }
 \author{
 Yuan Li
 }
 \seealso{
-\code{\link{gathergpu}}
+\code{\link{dotgpu}}
 }
 \keyword{GPU}
 

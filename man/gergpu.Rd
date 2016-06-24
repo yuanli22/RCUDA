@@ -4,16 +4,16 @@
 \alias{gergpu}
 \title{gergpu}
 \usage{
-gergpu(A, x, y, alpha = 1)
+gergpu(alpha = 1, x, y, A)
 }
 \arguments{
-\item{A}{input/output matrix; list of R external GPU pointer and dimension}
+\item{alpha}{scale factor a of matrix A; default 1}
 
 \item{x}{input vector; list of R external GPU pointer and dimension}
 
 \item{y}{input vector; list of R external GPU pointer and dimension}
 
-\item{alpha}{scale factor a of matrix A; default 1}
+\item{A}{input/output matrix; list of R external GPU pointer and dimension}
 }
 \value{
 updated matrix A, a list consisting of
@@ -34,7 +34,7 @@ y <- 1:4
 A_gpu <- creategpu(A, 3, 4)
 x_gpu <- creategpu(x)
 y_gpu <- creategpu(y)
-gergpu(A_gpu, x_gpu, y_gpu, 1)
+gergpu(1,x_gpu, y_gpu, A_gpu)
 gathergpu(A_gpu)
 }
 \seealso{

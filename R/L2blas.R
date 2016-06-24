@@ -24,10 +24,10 @@
 #' A_gpu <- creategpu(A, 4, 3)
 #' x_gpu <- creategpu(x)
 #' y_gpu <- creategpu(y)
-#' gemvgpu(A_gpu, x_gpu, y_gpu, 1, 1, 1)
+#' gemvgpu(trans = 1, alpha = 1, A_gpu, x_gpu, beta = 1, y_gpu)
 #' gathergpu(y_gpu)
 
-gemvgpu <- function(A, x, y, alpha = 1, beta = 0, trans = 1)
+gemvgpu <- function(trans = 1, alpha = 1, A, x, beta = 0, y)
 {
   checkGPU(A)
   checkGPU(x)
@@ -95,7 +95,7 @@ gemvgpu <- function(A, x, y, alpha = 1, beta = 0, trans = 1)
 #' gemvgpu(A_gpu, x_gpu, y_gpu, 1, 1, 1)
 #' gathergpu(y_gpu)
 
-gbmvgpu <- function(A, x, y, kl, ku, alpha = 1, beta = 0, trans = 1)
+gbmvgpu <- function(trans = 1, kl, ku, alpha = 1, A, x, beta = 0, y)
 {
   checkGPU(A)
   checkGPU(x)
@@ -157,10 +157,10 @@ gbmvgpu <- function(A, x, y, kl, ku, alpha = 1, beta = 0, trans = 1)
 #' A_gpu <- creategpu(A, 3, 4)
 #' x_gpu <- creategpu(x)
 #' y_gpu <- creategpu(y)
-#' gergpu(A_gpu, x_gpu, y_gpu, 1)
+#' gergpu(1,x_gpu, y_gpu, A_gpu)
 #' gathergpu(A_gpu)
 
-gergpu <- function(A, x, y, alpha = 1)
+gergpu <- function(alpha = 1, x, y, A)
 {
   checkGPU(A)
   checkGPU(x)
@@ -179,6 +179,418 @@ gergpu <- function(A, x, y, alpha = 1)
                  as.integer(A[3])         
                )
    ext <- GPUobject(ext, as.integer(A[2]), as.integer(A[3]))
+   return(ext)
+}
+
+
+#' sbmvgpu
+#'
+#' This function computes symmetric banded matrix-vector multipication y = a A x + b y
+#' by using CUDA cublas function cublasDsbmv
+#' @param A input matrix; list of R external GPU pointer and dimension 
+#' @param x input vector; list of R external GPU pointer and dimension
+#' @param y input/output vector; list of R external GPU pointer and dimension
+#' @param k number of subdiagonals
+#' @param alpha scale factor a of symmetric banded matrix A; default 1
+#' @param beta scale factor b of vector y; default 0
+#' @param fillmode indicates if matrix A lower or upper part is stored, 
+#' the other symmetric part is not referenced and is inferred from the 
+#' stored elements. if fillmode == 1 then the symmetric 
+#' banded matrix A is stored column by column, with the main diagonal of 
+#' the matrix stored in row 1, the first subdiagonal in row 2 
+#' (starting at first position), 
+#' the second subdiagonal in row 3 (starting at first position), etc. 
+#' if fillmode == 2 then the symmetric banded matrix A is 
+#' stored column by column, with the main diagonal of the matrix stored 
+#' in row k+1, the first superdiagonal in row k (starting at second position),
+#' the second superdiagonal in row k-1 (starting at third position), etc.
+#' @return vector y, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{length of vector y}
+#' \item{n: }{1}
+#' }
+#' @seealso \code{\link{gemvgpu}} 
+#' @export
+ 
+
+sbmvgpu <- function(fillmode = 1, k, alpha = 1, A, x, beta = 0, y)
+{
+  checkGPU(A)
+  checkGPU(x)
+  checkGPU(y)
+  if (as.integer(A[2]) != as.integer(A[3]))
+     stop ("A needs to be square matrix")
+  if (as.integer(A[3]) != as.integer(x[2]))
+     stop ("A x dimension doesn't match")
+  if (as.integer(A[2]) != as.integer(y[2]))
+     stop ("A y dimension doesn't match") 
+  ext <- .Call(
+                "sbmvGPU",
+                 A$ptr,
+                 x$ptr,
+                 y$ptr,
+		   as.numeric(alpha),
+                 as.numeric(beta),
+                 as.integer(A[2]),
+		   as.integer(k),
+		   as.numeric(fillmode)            
+               )
+   ext <- GPUobject(ext, as.integer(y[2]), 1)
+   return(ext)
+}
+
+#' symvgpu
+#'
+#' This function computes symmetric matrix-vector multipication y = a A x + b y
+#' by using CUDA cublas function cublasDsymv
+#' @param A input matrix; list of R external GPU pointer and dimension 
+#' @param x input vector; list of R external GPU pointer and dimension
+#' @param y input/output vector; list of R external GPU pointer and dimension
+#' @param alpha scale factor a of symmetric banded matrix A; default 1
+#' @param beta scale factor b of vector y; default 0
+#' @param fillmode indicates if matrix A lower or upper part is stored, 
+#' the other symmetric part is not referenced and is inferred from the 
+#' stored elements. if fillmode == 1 then the symmetric 
+#' banded matrix A is stored in lower mode
+#' if fillmode == 2 then the symmetric banded matrix A is 
+#' stored in upper mode
+#' @return vector y, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{length of vector y}
+#' \item{n: }{1}
+#' }
+#' @seealso \code{\link{sbmvgpu}} 
+#' @export
+ 
+
+symvgpu <- function(fillmode = 1, alpha = 1, A, x, beta = 0, y)
+{
+  checkGPU(A)
+  checkGPU(x)
+  checkGPU(y)
+  if (as.integer(A[2]) != as.integer(A[3]))
+     stop ("A needs to be square matrix")
+  if (as.integer(A[3]) != as.integer(x[2]))
+     stop ("A x dimension doesn't match")
+  if (as.integer(A[2]) != as.integer(y[2]))
+     stop ("A y dimension doesn't match") 
+  ext <- .Call(
+                "symvGPU",
+                 A$ptr,
+                 x$ptr,
+                 y$ptr,
+		   as.numeric(alpha),
+                 as.numeric(beta),
+                 as.integer(A[2]),
+		   as.numeric(fillmode)            
+               )
+   ext <- GPUobject(ext, as.integer(y[2]), 1)
+   return(ext)
+}
+
+
+#' syrgpu
+#'
+#' This function performs rank 1 update, A = a x x T + A, 
+#' where A is symmetric matrix, x is vector, a is scalar
+#' by using CUDA cublas function cublasDsyr
+#' @param A input matrix; list of R external GPU pointer and dimension 
+#' @param x input vector; list of R external GPU pointer and dimension
+#' @param alpha scale factor a of symmetric banded matrix A; default 1
+#' @param fillmode indicates if matrix A lower or upper part is stored, 
+#' the other symmetric part is not referenced and is inferred from the 
+#' stored elements. if fillmode == 1 then the symmetric 
+#' banded matrix A is stored in lower mode
+#' if fillmode == 2 then the symmetric banded matrix A is 
+#' stored in upper mode
+#' @return updated matrix A
+#' @seealso \code{\link{gergpu}} 
+#' @export
+ 
+
+syrgpu <- function(fillmode = 1, alpha = 1, x, A)
+{
+  checkGPU(A)
+  checkGPU(x)
+  if (as.integer(A[2]) != as.integer(A[3]))
+     stop ("A needs to be square matrix")
+  if (as.integer(A[3]) != as.integer(x[2]))
+     stop ("A x dimension doesn't match")
+  ext <- .Call(
+                "syrGPU",
+                 A$ptr,
+                 x$ptr,
+		   as.numeric(alpha),
+                 as.integer(A[2]),
+		   as.numeric(fillmode)            
+               )
+   ext <- GPUobject(ext, as.integer(A[2]), as.integer(A[3]))
+   return(ext)
+}
+
+
+#' syr2gpu
+#'
+#' This function performs rank 2 update, A = a (x y T + y x T) + A, 
+#' where A is symmetric matrix, x is vector, a is scalar
+#' by using CUDA cublas function cublasDsyr2
+#' @param A input matrix; list of R external GPU pointer and dimension 
+#' @param x input vector; list of R external GPU pointer and dimension
+#' @param y input vector; list of R external GPU pointer and dimension
+#' @param alpha scale factor a of symmetric banded matrix A; default 1
+#' @param fillmode indicates if matrix A lower or upper part is stored, 
+#' the other symmetric part is not referenced and is inferred from the 
+#' stored elements. if fillmode == 1 then the symmetric 
+#' banded matrix A is stored in lower mode
+#' if fillmode == 2 then the symmetric banded matrix A is 
+#' stored in upper mode
+#' @return updated matrix A
+#' @seealso \code{\link{syrgpu}} 
+#' @export
+
+syr2gpu <- function(fillmode = 1, alpha = 1, x, y, A)
+{
+  checkGPU(A)
+  checkGPU(x)
+  checkGPU(y)
+  if (as.integer(A[2]) != as.integer(A[3]))
+     stop ("A needs to be square matrix")
+  if (as.integer(A[3]) != as.integer(x[2]))
+     stop ("A x dimension doesn't match")
+  if (as.integer(A[3]) != as.integer(y[2]))
+     stop ("A y dimension doesn't match")
+  ext <- .Call(
+                "syr2GPU",
+                 A$ptr,
+                 x$ptr,
+                 y$ptr,
+		   as.numeric(alpha),
+                 as.integer(A[2]),
+		   as.numeric(fillmode)            
+               )
+   ext <- GPUobject(ext, as.integer(A[2]), as.integer(A[3]))
+   return(ext)
+}
+
+
+#' tbmvgpu
+#'
+#' This function computes triangular banded matrix-vector multipication x = op(A) x
+#' by using CUDA cublas function cublasDtbmv
+#' @param A input matrix; list of R external GPU pointer and dimension 
+#' @param x input/output vector; list of R external GPU pointer and dimension
+#' @param k number of sub- or super- diagonals
+#' @param trans matrix A transpose operator, 1 (non-transpose), 2 (transpose),
+#' 3 (conjugate transpose); default at 1 (non-transpose)
+#' @param fillmode indicates if matrix A lower or upper part is stored, 
+#' the other symmetric part is not referenced and is inferred from the 
+#' stored elements. if fillmode == 1 then the triagular 
+#' banded matrix A is stored column by column, with the main diagonal of 
+#' the matrix stored in row 1, the first subdiagonal in row 2 
+#' (starting at first position), 
+#' the second subdiagonal in row 3 (starting at first position), etc. 
+#' if fillmode == 2 then the triangular banded matrix A is 
+#' stored column by column, with the main diagonal of the matrix stored 
+#' in row k+1, the first superdiagonal in row k (starting at second position),
+#' the second superdiagonal in row k-1 (starting at third position), etc.
+#' @param diagmode indicates whether the main diagonal of the matrix A 
+#' is unity and consequently should not be touched or modified by the function.
+#' if diagmode = 1, the matrix diagonal has non-unit elements,
+#' if diagmode = 2, the matrix diagonal has unit elements
+#' @return updated vector x, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{length of vector x}
+#' \item{n: }{1}
+#' }
+#' @seealso \code{\link{gemvgpu}} 
+#' @export
+
+tbmvgpu <- function(fillmode = 1, trans = 1, diagmode = 1, k, A, x)
+{
+  checkGPU(A)
+  checkGPU(x)
+  if (as.integer(A[2]) != as.integer(A[3]))
+     stop ("A needs to be square matrix")
+  if (as.integer(A[3]) != as.integer(x[2]))
+     stop ("A x dimension doesn't match")
+  ext <- .Call(
+                "tbmvGPU",
+                 A$ptr,
+                 x$ptr,
+                 as.integer(A[2]),
+		   as.integer(k),
+		   as.numeric(fillmode),   
+		   as.numeric(trans),
+		   as.numeric(diagmode)          
+               )
+   ext <- GPUobject(ext, as.integer(x[2]), 1)
+   return(ext)
+}
+
+
+#' tbsvgpu
+#'
+#' This function solves the triangular banded linear system op(A) x = b
+#' by using CUDA cublas function cublasDtbsv
+#' @param A input matrix; list of R external GPU pointer and dimension 
+#' @param x input/output vector; list of R external GPU pointer and dimension
+#' @param k number of sub- or super- diagonals
+#' @param trans matrix A transpose operator, 1 (non-transpose), 2 (transpose),
+#' 3 (conjugate transpose); default at 1 (non-transpose)
+#' @param fillmode indicates if matrix A lower or upper part is stored, 
+#' the other symmetric part is not referenced and is inferred from the 
+#' stored elements. if fillmode == 1 then the triagular 
+#' banded matrix A is stored column by column, with the main diagonal of 
+#' the matrix stored in row 1, the first subdiagonal in row 2 
+#' (starting at first position), 
+#' the second subdiagonal in row 3 (starting at first position), etc. 
+#' if fillmode == 2 then the triangular banded matrix A is 
+#' stored column by column, with the main diagonal of the matrix stored 
+#' in row k+1, the first superdiagonal in row k (starting at second position),
+#' the second superdiagonal in row k-1 (starting at third position), etc.
+#' @param diagmode indicates whether the main diagonal of the matrix A 
+#' is unity and consequently should not be touched or modified by the function.
+#' if diagmode = 1, the matrix diagonal has non-unit elements,
+#' if diagmode = 2, the matrix diagonal has unit elements
+#' @return updated vector x, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{length of vector x}
+#' \item{n: }{1}
+#' }
+#' @seealso \code{\link{tbmvgpu}} 
+#' @export
+
+tbsvgpu <- function(fillmode = 1, trans = 1, diagmode = 1, k, A, x)
+{
+  checkGPU(A)
+  checkGPU(x)
+  if (as.integer(A[2]) != as.integer(A[3]))
+     stop ("A needs to be square matrix")
+  if (as.integer(A[3]) != as.integer(x[2]))
+     stop ("A x dimension doesn't match")
+  ext <- .Call(
+                "tbsvGPU",
+                 A$ptr,
+                 x$ptr,
+                 as.integer(A[2]),
+		   as.integer(k),
+		   as.numeric(fillmode),   
+		   as.numeric(trans),
+		   as.numeric(diagmode)          
+               )
+   ext <- GPUobject(ext, as.integer(x[2]), 1)
+   return(ext)
+}
+
+
+#' trmvgpu
+#'
+#' This function computes triangular matrix-vector multipication x = op(A) x
+#' by using CUDA cublas function cublasDtrmv
+#' @param A input matrix; list of R external GPU pointer and dimension 
+#' @param x input/output vector; list of R external GPU pointer and dimension
+#' @param trans matrix A transpose operator, 1 (non-transpose), 2 (transpose),
+#' 3 (conjugate transpose); default at 1 (non-transpose)
+#' @param fillmode indicates if matrix A lower or upper part is stored, 
+#' the other part is not referenced and is inferred from the 
+#' stored elements. if fillmode == 1 then the triagular 
+#' banded matrix A is stored column by column, with the main diagonal of 
+#' the matrix stored in row 1, the first subdiagonal in row 2 
+#' (starting at first position), 
+#' the second subdiagonal in row 3 (starting at first position), etc. 
+#' if fillmode == 2 then the triangular banded matrix A is 
+#' stored column by column, with the main diagonal of the matrix stored 
+#' in row k+1, the first superdiagonal in row k (starting at second position),
+#' the second superdiagonal in row k-1 (starting at third position), etc.
+#' @param diagmode indicates whether the main diagonal of the matrix A 
+#' is unity and consequently should not be touched or modified by the function.
+#' if diagmode = 1, the matrix diagonal has non-unit elements,
+#' if diagmode = 2, the matrix diagonal has unit elements
+#' @return updated vector x, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{length of vector x}
+#' \item{n: }{1}
+#' }
+#' @seealso \code{\link{gemvgpu}} 
+#' @export
+
+trmvgpu <- function(fillmode = 1, trans = 1, diagmode = 1, A, x)
+{
+  checkGPU(A)
+  checkGPU(x)
+  if (as.integer(A[2]) != as.integer(A[3]))
+     stop ("A needs to be square matrix")
+  if (as.integer(A[3]) != as.integer(x[2]))
+     stop ("A x dimension doesn't match")
+  ext <- .Call(
+                "trmvGPU",
+                 A$ptr,
+                 x$ptr,
+                 as.integer(A[2]),
+		   as.numeric(fillmode),   
+		   as.numeric(trans),
+		   as.numeric(diagmode)          
+               )
+   ext <- GPUobject(ext, as.integer(x[2]), 1)
+   return(ext)
+}
+
+
+#' trsvgpu
+#'
+#' This function solves triangular linear system op(A) x = b
+#' by using CUDA cublas function cublasDtrsv
+#' @param A input matrix; list of R external GPU pointer and dimension 
+#' @param x input/output vector; list of R external GPU pointer and dimension
+#' @param trans matrix A transpose operator, 1 (non-transpose), 2 (transpose),
+#' 3 (conjugate transpose); default at 1 (non-transpose)
+#' @param fillmode indicates if matrix A lower or upper part is stored, 
+#' the other part is not referenced and is inferred from the 
+#' stored elements. if fillmode == 1 then the triagular 
+#' banded matrix A is stored column by column, with the main diagonal of 
+#' the matrix stored in row 1, the first subdiagonal in row 2 
+#' (starting at first position), 
+#' the second subdiagonal in row 3 (starting at first position), etc. 
+#' if fillmode == 2 then the triangular banded matrix A is 
+#' stored column by column, with the main diagonal of the matrix stored 
+#' in row k+1, the first superdiagonal in row k (starting at second position),
+#' the second superdiagonal in row k-1 (starting at third position), etc.
+#' @param diagmode indicates whether the main diagonal of the matrix A 
+#' is unity and consequently should not be touched or modified by the function.
+#' if diagmode = 1, the matrix diagonal has non-unit elements,
+#' if diagmode = 2, the matrix diagonal has unit elements
+#' @return updated vector x, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{length of vector x}
+#' \item{n: }{1}
+#' }
+#' @seealso \code{\link{tbsvgpu}} 
+#' @export
+
+trsvgpu <- function(fillmode = 1, trans = 1, diagmode = 1, A, x)
+{
+  checkGPU(A)
+  checkGPU(x)
+  if (as.integer(A[2]) != as.integer(A[3]))
+     stop ("A needs to be square matrix")
+  if (as.integer(A[3]) != as.integer(x[2]))
+     stop ("A x dimension doesn't match")
+  ext <- .Call(
+                "trsvGPU",
+                 A$ptr,
+                 x$ptr,
+                 as.integer(A[2]),
+		   as.numeric(fillmode),   
+		   as.numeric(trans),
+		   as.numeric(diagmode)          
+               )
+   ext <- GPUobject(ext, as.integer(x[2]), 1)
    return(ext)
 }
 

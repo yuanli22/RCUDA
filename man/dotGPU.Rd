@@ -26,6 +26,6 @@ b_gpu <- creategpu(b)
 dotgpu(a_gpu, b_gpu)
 }
 \seealso{
-\code{\link{norm2gpu}}
+\code{\link{nrm2gpu}}
 }
 

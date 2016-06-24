@@ -1,18 +1,18 @@
-#' maxgpu
+#' amaxgpu
 #'
 #' This function finds the (smallest) index of the element with 
 #' the maximum magnitude of given vector/matrix
-#' by using CUDA cublas function cublasIdamin
+#' by using CUDA cublas function cublasIdamax
 #' @param input list consisting of R external GPU pointer and dimension 
 #' @return the resulting index 
-#' @seealso \code{\link{mingpu}} 
+#' @seealso \code{\link{amingpu}} 
 #' @export
 #' @examples
 #' a <- 1:4
 #' a_gpu <- creategpu(a)
-#' maxgpu(a_gpu)
+#' amaxgpu(a_gpu)
 
-maxgpu<-function(input)
+amaxgpu<-function(input)
 {
     checkGPU(input)
     ext <- .Call(
@@ -24,21 +24,21 @@ maxgpu<-function(input)
 }
 
 
-#' mingpu
+#' amingpu
 #'
 #' This function finds the (smallest) index of the element 
 #' with the minimum magnitude of given vector
 #' by using CUDA cublas function cublasIdamin
 #' @param input list consisting of R external GPU pointer and dimension 
 #' @return the resulting index 
-#' @seealso \code{\link{maxgpu}} 
+#' @seealso \code{\link{amaxgpu}} 
 #' @export
 #' @examples
 #' a <- 1:4
 #' a_gpu <- creategpu(a)
-#' mingpu(a_gpu) 
+#' amingpu(a_gpu) 
 
-mingpu<-function(input)
+amingpu<-function(input)
 {
     checkGPU(input)
     ext <- .Call(
@@ -53,11 +53,11 @@ mingpu<-function(input)
 #' asumgpu
 #'
 #' This function computes the summation 
-#' of the absolute values of elements of given vector/matrix
+#' of the elements' absolute values of given vector/matrix
 #' by using CUDA cublas function cublasDasum
 #' @param input list consisting of R external GPU pointer and dimension 
 #' @return the vector/matrix's elements absolute values summation 
-#' @seealso \code{\link{maxgpu}} 
+#' @seealso \code{\link{amaxgpu}} 
 #' @export
 #' @examples
 #' a <- 1:4
@@ -79,13 +79,13 @@ asumgpu<-function(input)
 #' axpygpu
 #'
 #' This function multiplies the vector x by the scalar a and adds it 
-#' to the vector y overwriting the latest vector with the result 
-#' by using CUDA cublas function cublasDaxpy
+#' to the vector y, and overwrites y as the result.  
+#' by using CUDA cublas function cublasDaxpy. y = a x + y
 #' @param x list consisting of R external GPU pointer and dimension
 #' @param y list consisting of R external GPU pointer and dimension 
 #' @param alpha scale factor alpha; default 1
 #' @return updated y vector/matrix
-#' @seealso \code{\link{scalegpu}} 
+#' @seealso \code{\link{scalgpu}} 
 #' @export
 #' @examples
 #' a <- 1:4
@@ -190,7 +190,7 @@ scalgpu<-function(x, alpha = 1)
 #' @param x list consisting of R external GPU pointer and dimension 
 #' @param y list consisting of R external GPU pointer and dimension
 #' @return the resulting dot product 
-#' @seealso \code{\link{norm2gpu}} 
+#' @seealso \code{\link{nrm2gpu}} 
 #' @export
 #' @examples
 #' a <- 1:4
@@ -224,12 +224,12 @@ dotgpu <- function(x, y)
 #' @return vector Euclidean norm, a non-negative number
 #' @author Yuan Li        
 #' @keywords GPU 
-#' @seealso \code{\link{gathergpu}}  
+#' @seealso \code{\link{dotgpu}}  
 #' @export
 #' @examples
 #' a <- 1:4
 #' a_gpu <- creategpu(a)
-#' norm2gpu(a_gpu) 
+#' nrm2gpu(a_gpu) 
 
 nrm2gpu<-function(input)
 {

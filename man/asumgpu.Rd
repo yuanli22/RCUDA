@@ -14,7 +14,7 @@ the vector/matrix's elements absolute values summation
 }
 \description{
 This function computes the summation 
-of the absolute values of elements of given vector/matrix
+of the elements' absolute values of given vector/matrix
 by using CUDA cublas function cublasDasum
 }
 \examples{
@@ -23,6 +23,6 @@ a_gpu <- creategpu(a)
 asumgpu(a_gpu) 
 }
 \seealso{
-\code{\link{maxgpu}}
+\code{\link{amaxgpu}}
 }
 

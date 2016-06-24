@@ -4,21 +4,21 @@
 \alias{gemvgpu}
 \title{gemvgpu}
 \usage{
-gemvgpu(A, x, y, alpha = 1, beta = 0, trans = 1)
+gemvgpu(trans = 1, alpha = 1, A, x, beta = 0, y)
 }
 \arguments{
+\item{trans}{matrix A transpose operator, 1 (non-transpose), 2 (transpose),
+3 (conjugate transpose); default at 1 (non-transpose)}
+
+\item{alpha}{scale factor a of matrix A; default 1}
+
 \item{A}{input matrix; list of R external GPU pointer and dimension}
 
 \item{x}{input vector; list of R external GPU pointer and dimension}
 
-\item{y}{input/output vector; list of R external GPU pointer and dimension}
-
-\item{alpha}{scale factor a of matrix A; default 1}
-
 \item{beta}{scale factor b of vector y; default 0}
 
-\item{trans}{matrix A transpose operator, 1 (non-transpose), 2 (transpose),
-3 (conjugate transpose); default at 1 (non-transpose)}
+\item{y}{input/output vector; list of R external GPU pointer and dimension}
 }
 \value{
 vector y, a list consisting of
@@ -39,7 +39,7 @@ y <- 1:4
 A_gpu <- creategpu(A, 4, 3)
 x_gpu <- creategpu(x)
 y_gpu <- creategpu(y)
-gemvgpu(A_gpu, x_gpu, y_gpu, 1, 1, 1)
+gemvgpu(trans = 1, alpha = 1, A_gpu, x_gpu, beta = 1, y_gpu)
 gathergpu(y_gpu)
 }
 \seealso{
