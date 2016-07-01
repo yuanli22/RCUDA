@@ -162,9 +162,9 @@ cublasSideMode_t cublasSideMode(double input)
 {
 	cublasSideMode_t sidemode;
 	if (input == 1){
-	sidemode = CUBLAS_SIDE_LEFT;    
+	sidemode = CUBLAS_SIDE_RIGHT;    
  	} else if (input == 2) { 
-         sidemode = CUBLAS_SIDE_RIGHT;
+         sidemode = CUBLAS_SIDE_LEFT;
 	}  
        return sidemode;
 }

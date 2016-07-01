@@ -1056,7 +1056,7 @@ SEXP geamGPU(SEXP extA, SEXP extB, SEXP extC, SEXP lda, SEXP ldb, SEXP ldc,
 
 /*
 define function to performs the matrix-matrix multiplication
-C = A diag(X) or C = diag(X) A where a is scalar, 
+C = A diag(x) or C = diag(x) A where a is scalar, 
 A and C are matrices stored in column-major format 
 with dimensions m x n, X is a vector of size n or m depends on 
 CUBLAS_SIDE setup.
