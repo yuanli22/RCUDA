@@ -1,4 +1,4 @@
-Package: Rcublas
+Package: RCUDA
 Type: Package
 Title: GPU Enabled BLAS, LAPACK and Statistical Functions and Random Number Generators
 Version: 0.1
@@ -11,6 +11,6 @@ Depends: R (>= 3.0.0)
 NeedsCompilation: yes
 SystemRequirements: Nvidia's CUDA toolkit (>= release 5.5); Linux
         operating system; GNU make.
-URL: https://github.ncsu.edu/yli16/R_CUBLAS
+URL: https://github.com/yuanli22/RCUDA
 RoxygenNote: 5.0.1
 Packaged: 2016-05-14 15:51:23 UTC; yli16

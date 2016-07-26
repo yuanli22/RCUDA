@@ -1,7 +1,7 @@
 /*
 This source file contains CUDA and CUBLAS safe call function, R external
 pointer finalizer and check functions.  
-*/
+*/  
 #include <R.h>
 #include <cuda.h>
 #include <Rinternals.h>

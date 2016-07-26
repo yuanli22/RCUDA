@@ -2,7 +2,7 @@
 /*
 This file contains all R interfaces of CUBLAS and CURAND functions
 */
-
+  
 /*
 define function to create a vector in GPU 
 by transfering a R's vector to GPU.

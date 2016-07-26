@@ -1,7 +1,7 @@
 #include <stdio.h>
 #define M 512
 #define CUDART_PI_F 3.141592654f
-
+  
 // the CUDA kernel for vector addition
 __global__ void sum(double *a, double *b, double *out, int n)
 {

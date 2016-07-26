@@ -1,9 +1,9 @@
-#include <R.h>
+#include <R.h>  
 #include <cuda.h> 
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 #include "cudadefine.h"
-
+  
 SEXP R_getRObjectPointer(SEXP r_obj)
 {
 	void *ptr = NULL;
