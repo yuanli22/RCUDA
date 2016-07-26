@@ -8,7 +8,7 @@ SEXP R_getRObjectPointer(SEXP r_obj)
 {
 	void *ptr = NULL;
 	switch(TYPEOF(r_obj)) 
-       {
+       {  
 	  case INTSXP:
 		ptr = INTEGER(r_obj);
 		break;
