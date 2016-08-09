@@ -132,5 +132,42 @@ rpoisgpu <- function(n, lambda = 1, seed = 1)
 }
 
 
+#' rgammagpu
+#'
+#' This function generates Gamma distributed random numbers 
+#' by using self-defined CUDA function based on George Marsaglia 
+#' and Wai Wan Tsang's method 
+#' @param n number of random numbers 
+#' @param alpha par of Gamma distribution; default value 2
+#' @param beta par of Gamma distribution; default value 1  
+#' @param seed random number generator seed; default value 1
+#' @return generated random numbers vector, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{number of rows}
+#' \item{n: }{number of columns}
+#' }
+#' @seealso \code{\link{runifgpu}} 
+#' @export
+#' @examples
+#' a_gpu <- rgammagpu(100, 2, 1) 
+
+rgammagpu <- function(n, alpha = 2, beta = 1, seed = 1)
+{
+    ext <- .Call(
+                  "gammaRNGGPU",                        
+                  as.integer(n),
+	           as.numeric(alpha),
+	           as.numeric(beta),
+	           as.numeric(seed),
+                  PACKAGE = "supplement"
+                )
+    ext <- GPUobject(ext, as.integer(n), as.integer(1))
+    return(ext)
+}
+
+
+
+
 
 

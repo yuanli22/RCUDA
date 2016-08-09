@@ -2,11 +2,15 @@
 % Please edit documentation in R/device_query.R
 \name{gpuquery}
 \alias{gpuquery}
-\title{gpuquery}
+\title{gpuquery
+ 
+This function returns the information of available GPU device in system}
 \usage{
 gpuquery()
 }
 \description{
+gpuquery
+ 
 This function returns the information of available GPU device in system
 }
 \examples{
