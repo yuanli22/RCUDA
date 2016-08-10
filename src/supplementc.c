@@ -211,7 +211,7 @@ SEXP subset_GPU(SEXP ina, SEXP N, SEXP sub)
 
 /*
 define function to generate gamma distributied random
-number, input is length of vector, alpha, beta
+number, input is length of vector, k, theta
 and seed, output is pointer pointing to a GPU vector(device)
 */
 extern void gammarng(double a, double b, int n, double seed, double* number);
@@ -225,6 +225,26 @@ SEXP gammaRNGGPU(SEXP n, SEXP alpha, SEXP beta, SEXP seed)
 	cudacall(cudaMalloc((void**)&x, (*lenthN) * sizeof(double)));
 	SEXP out = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
 	gammarng(*a, *b, *lenthN, *s, R_ExternalPtrAddr(out));
+	UNPROTECT(1);    
+	return out;
+} 
+
+/*
+define function to generate beta distributied random
+number, input is length of vector, alpha, beta
+and seed, output is pointer pointing to a GPU vector(device)
+*/
+extern void betarng(double a, double b, int n, double seed, double* number);
+SEXP betaRNGGPU(SEXP n, SEXP alpha, SEXP beta, SEXP seed) 
+{
+	int *lenthN = INTEGER(n);
+	double *a = REAL(alpha);
+	double *b = REAL(beta);
+	double *s = REAL(seed);
+	double *x;
+	cudacall(cudaMalloc((void**)&x, (*lenthN) * sizeof(double)));
+	SEXP out = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
+	betarng(*a, *b, *lenthN, *s, R_ExternalPtrAddr(out));
 	UNPROTECT(1);    
 	return out;
 } 
