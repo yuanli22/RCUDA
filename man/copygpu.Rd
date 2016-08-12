@@ -26,6 +26,6 @@ b_gpu <- creategpu(b)
 copygpu(a_gpu, b_gpu) 
 }
 \seealso{
-\code{\link{axypgpu}}
+\code{\link{axpygpu}}
 }
 

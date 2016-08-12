@@ -123,7 +123,7 @@ axpygpu<-function(x, y, alpha = 1)
 #' @param x list consisting of R external GPU pointer and dimension
 #' @param y list consisting of R external GPU pointer and dimension
 #' @return copied vector/matrix
-#' @seealso \code{\link{axypgpu}} 
+#' @seealso \code{\link{axpygpu}} 
 #' @export
 #' @examples
 #' a <- 1:4

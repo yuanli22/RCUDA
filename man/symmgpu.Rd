@@ -24,9 +24,13 @@ stored column by column, with the main diagonal of the matrix stored
 in row k+1, the first superdiagonal in row k (starting at second position),
 the second superdiagonal in row k-1 (starting at third position), etc.}
 
+\item{alpha}{scale factor a of matrix AB; default 1}
+
 \item{A}{input matrix; list of R external GPU pointer and dimension}
 
 \item{B}{input matrix; list of R external GPU pointer and dimension}
+
+\item{beta}{scale factor b of matrix C; default 0}
 
 \item{C}{input/output matrix; list of R external GPU pointer and dimension}
 }
@@ -42,13 +46,6 @@ updated matrix C, a list consisting of
 This function computes the symmetric matrix-matrix multiplication 
 C = a A B + b C 
 by using CUDA cublas function cublasDsymm
-}
-\examples{
-A_gpu <- creategpu(1:9, 3, 3)
-B_gpu <- creategpu(1:6, 3, 2)
-C_gpu <- creategpu(1:4, 3, 2)
-symmgpu(alpha=1, A_gpu, B_gpu, beta=1, C_gpu)
-gathergpu(C_gpu)
 }
 \seealso{
 \code{\link{gemmgpu}}

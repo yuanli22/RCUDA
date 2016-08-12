@@ -7,9 +7,19 @@
 geamgpu(transa = 1, transb = 1, alpha = 1, A, B, beta = 0, C)
 }
 \arguments{
+\item{transa}{matrix A transpose operator, 1 (non-transpose), 2 (transpose),
+3 (conjugate transpose); default at 1 (non-transpose)}
+
+\item{transb}{matrix B transpose operator, 1 (non-transpose), 2 (transpose),
+3 (conjugate transpose); default at 1 (non-transpose)}
+
+\item{alpha}{scale factor a of matrix A; default 1}
+
 \item{A}{input matrix; list of R external GPU pointer and dimension}
 
 \item{B}{input matrix; list of R external GPU pointer and dimension}
+
+\item{beta}{scale factor b of matrix B; default 0}
 
 \item{C}{output matrix; list of R external GPU pointer and dimension}
 }
@@ -25,13 +35,6 @@ updated matrix C, a list consisting of
 This function computes the matrix-matrix addition/trasportation 
 C = a op ( A ) + b op ( B ) 
 by using CUDA cublas function cublasDgeam
-}
-\examples{
-A_gpu <- creategpu(1:6, 3, 2)
-B_gpu <- creategpu(1:6, 3, 2)
-C_gpu <- creategpu(1:4, 2, 2)
-gemmgpu(2, 1, 1, A_gpu, B_gpu, beta=1, C_gpu)
-gathergpu(C_gpu)
 }
 \seealso{
 \code{\link{gemvgpu}}

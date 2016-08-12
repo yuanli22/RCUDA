@@ -22,7 +22,11 @@ the second superdiagonal in row k-1 (starting at third position), etc.}
 \item{trans}{matrix A transpose operator, 1 (non-transpose), 2 (transpose),
 3 (conjugate transpose); default at 1 (non-transpose)}
 
+\item{alpha}{scale factor a; default 1}
+
 \item{A}{input matrix; list of R external GPU pointer and dimension}
+
+\item{beta}{scale factor b; default 0}
 
 \item{C}{input/output matrix; list of R external GPU pointer and dimension}
 }
@@ -38,13 +42,6 @@ updated matrix C, a list consisting of
 This function performs the symmetric rank- k update 
 C = a op ( A ) op ( A ) T + b C
 by using CUDA cublas function cublasDsyrk
-}
-\examples{
-creategpu(1:12,3,4)->A
-creategpu(1:12,4,3)->B
-creategpu(1:9,3,3)->C
-syrkgpu(fillmode=1,trans=1,alpha=1,A,beta = 0, C)
-gathergpu(C)
 }
 \seealso{
 \code{\link{gemmgpu}}

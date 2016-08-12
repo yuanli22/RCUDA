@@ -7,9 +7,19 @@
 gemmgpu(transa = 1, transb = 1, alpha = 1, A, B, beta = 0, C)
 }
 \arguments{
+\item{transa}{matrix A transpose operator, 1 (non-transpose), 2 (transpose),
+3 (conjugate transpose); default at 1 (non-transpose)}
+
+\item{transb}{matrix B transpose operator, 1 (non-transpose), 2 (transpose),
+3 (conjugate transpose); default at 1 (non-transpose)}
+
+\item{alpha}{scale factor a of matrix A; default 1}
+
 \item{A}{input matrix; list of R external GPU pointer and dimension}
 
 \item{B}{input matrix; list of R external GPU pointer and dimension}
+
+\item{beta}{scale factor b of matrix C; default 0}
 
 \item{C}{input/output matrix; list of R external GPU pointer and dimension}
 }

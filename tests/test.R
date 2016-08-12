@@ -1,6 +1,6 @@
 rm(list = ls())
-install.packages("/mnt/home/yli16/yli16/Rcublas_0.1.tar.gz", repos = NULL,INSTALL_opts = c('--no-lock'))
-library(Rcublas)
+install.packages("/mnt/home/yli16/yli16/RCUDA_0.1.tar.gz", repos = NULL,INSTALL_opts = c('--no-lock'))
+library(RCUDA)
 gpuquery()
  
 ## define some constant
@@ -42,11 +42,11 @@ GPUtest(result, "create and gather function run perfectly!\n",
 
 ##test level 1 cublas functions
 ##test min 
-(abs(min(abs(a)) - abs(a[mingpu(x)])) < eps) -> result
+(abs(min(abs(a)) - abs(a[amingpu(x)])) < eps) -> result
 GPUtest(result, "min function run perfectly!",
         "min function fail!")
 system.time(multiplerun(min(abs(a)), runtime)) -> timecpu
-system.time(multiplerun(mingpu(x), runtime)) -> timegpu
+system.time(multiplerun(amingpu(x), runtime)) -> timegpu
 cat("min function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)",timecpu[3] / timegpu[3], "\n")
 L1testout[k,1] <- c("Minimum")
@@ -57,11 +57,11 @@ L1testout[k,5] <- timegpu[3]
  
 
 ##test max
-(abs(max(abs(a))-abs(a[maxgpu(x)]))<eps)->result
+(abs(max(abs(a))-abs(a[amaxgpu(x)]))<eps)->result
 GPUtest(result,"max function run perfectly!",
         "max function fail!")
 system.time(multiplerun(max(abs(a)), runtime)) -> timecpu
-system.time(multiplerun(maxgpu(x), runtime)) -> timegpu
+system.time(multiplerun(amaxgpu(x), runtime)) -> timegpu
 cat("max function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)",timecpu[3] / timegpu[3], "\n")
 L1testout[length(vec)+k,1] <- c("Maximum")
@@ -73,11 +73,11 @@ L1testout[length(vec)+k,5] <- timegpu[3]
 
 
 ##test norm2
-(abs(sqrt(sum(a * a))-norm2gpu(x)) < eps) -> result
+(abs(sqrt(sum(a * a))-nrm2gpu(x)) < eps) -> result
 GPUtest(result,"norm2 function run perfectly!",
         "norm2 function fail!")
 system.time(multiplerun(sqrt(sum(a * a)), runtime)) -> timecpu
-system.time(multiplerun(norm2gpu(x), runtime)) -> timegpu
+system.time(multiplerun(nrm2gpu(x), runtime)) -> timegpu
 cat("norm2 function for vector of length", vec[k],
     "speed up is(CPU time / GPU time)",timecpu[3] / timegpu[3], "\n")
 L1testout[2*length(vec)+k,1] <- c("norm2")

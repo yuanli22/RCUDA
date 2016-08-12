@@ -224,6 +224,7 @@ SEXP gammaRNGGPU(SEXP n, SEXP alpha, SEXP beta, SEXP seed)
 	double *x;
 	cudacall(cudaMalloc((void**)&x, (*lenthN) * sizeof(double)));
 	SEXP out = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
+	R_RegisterCFinalizerEx(out, _finalizer, TRUE);
 	gammarng(*a, *b, *lenthN, *s, R_ExternalPtrAddr(out));
 	UNPROTECT(1);    
 	return out;
@@ -244,6 +245,7 @@ SEXP betaRNGGPU(SEXP n, SEXP alpha, SEXP beta, SEXP seed)
 	double *x;
 	cudacall(cudaMalloc((void**)&x, (*lenthN) * sizeof(double)));
 	SEXP out = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
+	R_RegisterCFinalizerEx(out, _finalizer, TRUE);
 	betarng(*a, *b, *lenthN, *s, R_ExternalPtrAddr(out));
 	UNPROTECT(1);    
 	return out;

@@ -33,6 +33,8 @@ is unity and consequently should not be touched or modified by the function.
 if diagmode = 1, the matrix diagonal has non-unit elements,
 if diagmode = 2, the matrix diagonal has unit elements.}
 
+\item{alpha}{scale factor a of matrix AB; default 1}
+
 \item{A}{input matrix; list of R external GPU pointer and dimension}
 
 \item{B}{input matrix; list of R external GPU pointer and dimension}
@@ -51,13 +53,6 @@ updated matrix C, a list consisting of
 This function computes the triangle matrix-matrix multiplication 
 C = a A B or C = a B A 
 by using CUDA cublas function cublasDtrmm
-}
-\examples{
-A_gpu <- creategpu(1:9, 3, 3)
-B_gpu <- creategpu(1:6, 3, 2)
-C_gpu <- creategpu(1:4, 3, 2)
-symmgpu(alpha=1, A_gpu, B_gpu, beta=1, C_gpu)
-gathergpu(C_gpu)
 }
 \seealso{
 \code{\link{symmgpu}}

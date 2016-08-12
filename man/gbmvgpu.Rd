@@ -36,16 +36,6 @@ vector y, a list consisting of
 This function computes banded matrix-vector multipication y = a A x + b y
 by using CUDA cublas function cublasDgbmv
 }
-\examples{
-A <- 1:12
-x <- 1:3
-y <- 1:4
-A_gpu <- creategpu(A, 4, 3)
-x_gpu <- creategpu(x)
-y_gpu <- creategpu(y)
-gemvgpu(A_gpu, x_gpu, y_gpu, 1, 1, 1)
-gathergpu(y_gpu)
-}
 \seealso{
 \code{\link{gergpu}}
 }

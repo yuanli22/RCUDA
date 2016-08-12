@@ -6,6 +6,12 @@
 #' @param A input matrix; list of R external GPU pointer and dimension 
 #' @param B input matrix; list of R external GPU pointer and dimension
 #' @param C input/output matrix; list of R external GPU pointer and dimension
+#' @param alpha scale factor a of matrix A; default 1
+#' @param beta scale factor b of matrix C; default 0
+#' @param transa matrix A transpose operator, 1 (non-transpose), 2 (transpose),
+#' 3 (conjugate transpose); default at 1 (non-transpose)
+#' @param transb matrix B transpose operator, 1 (non-transpose), 2 (transpose),
+#' 3 (conjugate transpose); default at 1 (non-transpose)
 #' @return updated matrix C, a list consisting of
 #' \itemize{
 #' \item{ptr: }{GPU pointer}
@@ -105,6 +111,8 @@ gemmgpu <- function(transa = 1, transb = 1, alpha = 1, A, B, beta = 0, C)
 #' @param A input matrix; list of R external GPU pointer and dimension 
 #' @param B input matrix; list of R external GPU pointer and dimension
 #' @param C input/output matrix; list of R external GPU pointer and dimension
+#' @param alpha scale factor a of matrix AB; default 1
+#' @param beta scale factor b of matrix C; default 0
 #' @param fillmode indicates if matrix A lower or upper part is stored, 
 #' the other part is not referenced and is inferred from the 
 #' stored elements. if fillmode == 1 then the triagular 
@@ -128,12 +136,7 @@ gemmgpu <- function(transa = 1, transb = 1, alpha = 1, A, B, beta = 0, C)
 #' }
 #' @seealso \code{\link{gemmgpu}}  
 #' @export
-#' @examples
-#' A_gpu <- creategpu(1:9, 3, 3)
-#' B_gpu <- creategpu(1:6, 3, 2)
-#' C_gpu <- creategpu(1:4, 3, 2)
-#' symmgpu(alpha=1, A_gpu, B_gpu, beta=1, C_gpu)
-#' gathergpu(C_gpu)
+ 
 
 symmgpu <- function(sidemode = 1, fillmode = 1, alpha = 1, A, B, beta = 0, C)
 {
@@ -177,6 +180,8 @@ symmgpu <- function(sidemode = 1, fillmode = 1, alpha = 1, A, B, beta = 0, C)
 #' by using CUDA cublas function cublasDsyrk
 #' @param A input matrix; list of R external GPU pointer and dimension 
 #' @param C input/output matrix; list of R external GPU pointer and dimension
+#' @param alpha scale factor a; default 1
+#' @param beta scale factor b; default 0
 #' @param trans matrix A transpose operator, 1 (non-transpose), 2 (transpose),
 #' 3 (conjugate transpose); default at 1 (non-transpose)
 #' @param fillmode indicates if matrix A lower or upper part is stored, 
@@ -198,12 +203,7 @@ symmgpu <- function(sidemode = 1, fillmode = 1, alpha = 1, A, B, beta = 0, C)
 #' }
 #' @seealso \code{\link{gemmgpu}}  
 #' @export
-#' @examples
-#' creategpu(1:12,3,4)->A
-#' creategpu(1:12,4,3)->B
-#' creategpu(1:9,3,3)->C
-#' syrkgpu(fillmode=1,trans=1,alpha=1,A,beta = 0, C)
-#' gathergpu(C)
+ 
 
 syrkgpu <- function(fillmode = 1, trans = 1, alpha = 1, A, beta = 0, C)
 {
@@ -249,6 +249,8 @@ syrkgpu <- function(fillmode = 1, trans = 1, alpha = 1, A, beta = 0, C)
 #' @param A input matrix; list of R external GPU pointer and dimension 
 #' @param B input matrix; list of R external GPU pointer and dimension 
 #' @param C input/output matrix; list of R external GPU pointer and dimension
+#' @param alpha scale factor a ; default 1
+#' @param beta scale factor b; default 0
 #' @param trans matrix A and B transpose operator, 1 (non-transpose), 2 (transpose),
 #' 3 (conjugate transpose); default at 1 (non-transpose)
 #' @param fillmode indicates if matrix A lower or upper part is stored, 
@@ -270,12 +272,7 @@ syrkgpu <- function(fillmode = 1, trans = 1, alpha = 1, A, beta = 0, C)
 #' }
 #' @seealso \code{\link{syrkgpu}}  
 #' @export
-#' @examples
-#' A_gpu <- creategpu(1:9, 3, 3)
-#' B_gpu <- creategpu(1:6, 3, 2)
-#' C_gpu <- creategpu(1:4, 3, 2)
-#' syrkgpu(alpha=1, A_gpu, B_gpu, beta=1, C_gpu)
-#' gathergpu(C_gpu)
+ 
 
 syr2kgpu <- function(fillmode = 1, trans = 1, alpha = 1, A, B, beta = 0, C)
 {
@@ -327,6 +324,7 @@ syr2kgpu <- function(fillmode = 1, trans = 1, alpha = 1, A, B, beta = 0, C)
 #' @param A input matrix; list of R external GPU pointer and dimension 
 #' @param B input matrix; list of R external GPU pointer and dimension
 #' @param C input/output matrix; list of R external GPU pointer and dimension
+#' @param alpha scale factor a of matrix AB; default 1
 #' @param fillmode indicates if matrix A lower or upper part is stored, 
 #' the other part is not referenced and is inferred from the 
 #' stored elements. if fillmode == 1 then the triagular 
@@ -356,12 +354,7 @@ syr2kgpu <- function(fillmode = 1, trans = 1, alpha = 1, A, B, beta = 0, C)
 #' }
 #' @seealso \code{\link{symmgpu}}  
 #' @export
-#' @examples
-#' A_gpu <- creategpu(1:9, 3, 3)
-#' B_gpu <- creategpu(1:6, 3, 2)
-#' C_gpu <- creategpu(1:4, 3, 2)
-#' symmgpu(alpha=1, A_gpu, B_gpu, beta=1, C_gpu)
-#' gathergpu(C_gpu)
+ 
 
 trmmgpu <- function(sidemode = 1, fillmode = 1, trans = 1,
                     diagmode = 1, alpha = 1, A, B, C)
@@ -407,6 +400,7 @@ trmmgpu <- function(sidemode = 1, fillmode = 1, trans = 1,
 #' by using CUDA cublas function cublasDtrsm
 #' @param A input matrix; list of R external GPU pointer and dimension 
 #' @param B input/output matrix; list of R external GPU pointer and dimension
+#' @param alpha scale factor a; default 1
 #' @param fillmode indicates if matrix A lower or upper part is stored, 
 #' the other part is not referenced and is inferred from the 
 #' stored elements. if fillmode == 1 then the triagular 
@@ -436,12 +430,7 @@ trmmgpu <- function(sidemode = 1, fillmode = 1, trans = 1,
 #' }
 #' @seealso \code{\link{trmmgpu}}  
 #' @export
-#' @examples
-#' A_gpu <- creategpu(1:9, 3, 3)
-#' B_gpu <- creategpu(1:6, 3, 2)
-#' C_gpu <- creategpu(1:4, 3, 2)
-#' symmgpu(alpha=1, A_gpu, B_gpu, beta=1, C_gpu)
-#' gathergpu(C_gpu)
+ 
 
 trsmgpu <- function(sidemode = 1, fillmode = 1, trans = 1,
                     diagmode = 1, alpha = 1, A, B)

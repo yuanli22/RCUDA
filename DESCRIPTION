@@ -1,11 +1,11 @@
 Package: RCUDA
 Type: Package
-Title: GPU Enabled BLAS, LAPACK and Statistical Functions and Random Number Generators
+Title: GPU Enabled BLAS, LAPACK, Statistical Functions and Random Number Generators
 Version: 0.1
 Date: 2016-1-07
 Author: Yuan Li, Hua Zhou
 Maintainer: Yuan Li <yli16@ncsu.edu>
-Description: Provides GPU-accelerated algebra and random numbergenerator functions by wrapping CUDA library. It also includes some self-defined GPU algebra functions which are unavailable from CUDA library. 
+Description: Provides GPU-accelerated algebra and random number generating functions by wrapping CUDA library. It also includes some self-defined high level statistical functions based on NVIDIA CUDA framework. 
 License: CPL
 Depends: R (>= 3.0.0)
 NeedsCompilation: yes

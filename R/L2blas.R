@@ -85,15 +85,7 @@ gemvgpu <- function(trans = 1, alpha = 1, A, x, beta = 0, y)
 #' }
 #' @seealso \code{\link{gergpu}} 
 #' @export
-#' @examples
-#' A <- 1:12
-#' x <- 1:3
-#' y <- 1:4
-#' A_gpu <- creategpu(A, 4, 3)
-#' x_gpu <- creategpu(x)
-#' y_gpu <- creategpu(y)
-#' gemvgpu(A_gpu, x_gpu, y_gpu, 1, 1, 1)
-#' gathergpu(y_gpu)
+ 
 
 gbmvgpu <- function(trans = 1, kl, ku, alpha = 1, A, x, beta = 0, y)
 {

@@ -31,13 +31,6 @@ This function performs the matrix-matrix multiplication
 C = A diag(x) or C = diag(x) A 
 by using CUDA cublas function cublasDdgmm
 }
-\examples{
-A_gpu <- creategpu(1:9, 3, 3)
-B_gpu <- creategpu(1:6, 3, 2)
-C_gpu <- creategpu(1:4, 3, 2)
-symmgpu(alpha=1, A_gpu, B_gpu, beta=1, C_gpu)
-gathergpu(C_gpu)
-}
 \seealso{
 \code{\link{symmgpu}}
 }
