@@ -174,8 +174,8 @@ rgammagpu <- function(n, k = 1, theta = 1, seed = 1)
 #' by using self-defined CUDA function based on George Marsaglia 
 #' and Wai Wan Tsang's method and gamma/beta relationship 
 #' @param n number of random numbers 
-#' @param alpha shape parameter of Gamma distribution; default value 1
-#' @param beta shape parameter of Gamma distribution; default value 1  
+#' @param alpha shape parameter of Beta distribution; default value 1
+#' @param beta shape parameter of Beta distribution; default value 1  
 #' @param seed random number generator seed; default value 1
 #' @return generated random numbers vector, a list consisting of
 #' \itemize{
@@ -199,6 +199,41 @@ rbetagpu <- function(n, alpha = 1, beta = 1, seed = 1)
                   PACKAGE = "supplement"
                 )
     ext <- GPUobject(ext, as.integer(n), as.integer(1))
+    return(ext)
+}
+
+
+#' rdirichletgpu
+#'
+#' This function generates Dirichlet distributed random numbers 
+#' by using self-defined CUDA function based on George Marsaglia 
+#' and Wai Wan Tsang's method and gamma/Dirichlet relationship 
+#' @param n number of random numbers 
+#' @param alpha concentration parameters of Dirichlet distribution;   
+#' @param seed random number generator seed; default value 1
+#' @return generated random numbers vector, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{number of rows}
+#' \item{n: }{number of columns}
+#' }
+#' @seealso \code{\link{runifgpu}} 
+#' @export
+#' @examples
+#' a_gpu <- rdirichletgpu(100, 2, 1) 
+
+rdirichletgpu <- function(n, alpha, seed = 1)
+{
+    K <- length(alpha)    
+    ext <- rdirichletgpu <- function (n, alpha)
+          {
+		K <- length(alpha)
+		result <- array(list(),K)
+		for (i in 1:K){
+		result[[i]] <- rgammagpu(n, alpha[i])
+	    }
+		result
+		}    
     return(ext)
 }
 

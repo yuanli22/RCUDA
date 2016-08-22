@@ -545,3 +545,13 @@ extern "C" void betarng(double a, double b, int n, double seed, double* numbers)
 
 }
 
+// CUDA beta dirichlet kernel invocation function
+extern "C" void dirichletrng(double a, int K, int n, double seed, double* numbers)
+{
+  curandState* states;
+  cudaMalloc((void**) &states, n * sizeof(curandState));
+  init<<<n + M - 1, M>>>(seed, states, n);
+ 
+
+}
+

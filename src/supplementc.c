@@ -251,6 +251,27 @@ SEXP betaRNGGPU(SEXP n, SEXP alpha, SEXP beta, SEXP seed)
 	return out;
 } 
 
+/*
+define function to generate Dirichlet distributied random
+number, input is length of vector, number of catergories, alpha,
+and seed, output is pointer pointing to a GPU vector(device)
+*/
+extern void dirichletrng(double a, int K, int n, double seed, double* number);
+SEXP dirichletRNGGPU(SEXP n, SEXP K, SEXP alpha, SEXP seed) 
+{
+	int *lenthN = INTEGER(n);
+	int *group = INTEGER(K);
+	double *a = REAL(alpha);
+	double *s = REAL(seed);
+	double *x;
+	cudacall(cudaMalloc((void**)&x, (*lenthN) * sizeof(double)));
+	SEXP out = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
+	R_RegisterCFinalizerEx(out, _finalizer, TRUE);
+	dirichletrng(*a, *group, *lenthN, *s, R_ExternalPtrAddr(out));
+	UNPROTECT(1);    
+	return out;
+} 
+
 //this function compute the summation of given vector
 extern double cuda_reduction(double *, int);
 SEXP vector_reduction(SEXP ina, SEXP N) 
