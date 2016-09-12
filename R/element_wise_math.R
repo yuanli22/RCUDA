@@ -233,3 +233,77 @@ gammagpu <- function(input)
     ext <- GPUobject(ext, as.integer(input[2]), as.integer(input[3]))
     return(ext)
   }
+
+
+#' dgammagpu
+#'
+#' This function computes the gammma pdf function of given vector/matrix
+#' by using self-defined CUDA function
+#' @param input list consisting of R external GPU pointer and dimension 
+#' @param k shape parameter of Gamma distribution; default value 1
+#' @param theta scale parameter of Gamma distribution; default value 1  
+#' @return gamma pdf result of vector/matrix, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{number of rows}
+#' \item{n: }{number of columns}
+#' }
+#' @seealso \code{\link{dbetagpu}} 
+#' @export
+#' @examples
+#' a <- 1:4
+#' a_gpu <- creategpu(a)
+#' dgammagpu(a_gpu) -> b_gpu
+#' gathergpu(b_gpu)
+
+dgammagpu <- function(input, k = 1, theta = 1) 
+{ 
+    checkGPU(input)
+    ext <- .Call("vector_gammapdf", 
+                input$ptr,
+		  as.integer(input[2]) * as.integer(input[3]),
+	         as.numeric(k),
+	         as.numeric(theta),
+                as.integer(input[2]) * as.integer(input[3]),
+                PACKAGE = "supplement"
+               )
+    ext <- GPUobject(ext, as.integer(input[2]), as.integer(input[3]))
+    return(ext)
+  }
+
+
+#' dbetagpu
+#'
+#' This function computes the beta pdf function of given vector/matrix
+#' by using self-defined CUDA function
+#' @param input list consisting of R external GPU pointer and dimension 
+#' @param k shape parameter of Beta distribution; default value 1
+#' @param theta scale parameter of Beta distribution; default value 1  
+#' @return beta pdf result of vector/matrix, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{number of rows}
+#' \item{n: }{number of columns}
+#' }
+#' @seealso \code{\link{dbetagpu}} 
+#' @export
+#' @examples
+#' a <- 1:4
+#' a_gpu <- creategpu(a)
+#' dbetagpu(a_gpu) -> b_gpu
+#' gathergpu(b_gpu)
+
+dbetagpu <- function(input, k = 1, theta = 1) 
+{ 
+    checkGPU(input)
+    ext <- .Call("vector_betapdf", 
+                input$ptr,
+		  as.integer(input[2]) * as.integer(input[3]),
+	         as.numeric(k),
+	         as.numeric(theta),
+                as.integer(input[2]) * as.integer(input[3]),
+                PACKAGE = "supplement"
+               )
+    ext <- GPUobject(ext, as.integer(input[2]), as.integer(input[3]))
+    return(ext)
+  }

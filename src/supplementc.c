@@ -105,6 +105,40 @@ SEXP vector_gamma(SEXP ina, SEXP N)
 	return(inc);
 } 
 
+//vector gamma pdf function
+extern void cuda_gammapdf(double *, double *, int, double, double);
+SEXP vector_gammapdf(SEXP ina, SEXP N, SEXP a1, SEXP a2) 
+{
+	int *n = INTEGER(N);
+	double *k = REAL(a1);
+	double *theta = REAL(a2);
+	double *x;
+	cudaMalloc((void**)&x, *n * sizeof(double));
+	//protect the R external pointer from finalizer
+	SEXP inc = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
+	R_RegisterCFinalizerEx(inc, _finalizer, TRUE);
+       UNPROTECT(1);
+	cuda_gammapdf(R_ExternalPtrAddr(ina), R_ExternalPtrAddr(inc), *n, *k, *theta);
+	return(inc);
+} 
+
+//vector beta pdf function
+extern void cuda_betapdf(double *, double *, int, double, double);
+SEXP vector_betapdf(SEXP ina, SEXP N, SEXP a1, SEXP a2) 
+{
+	int *n = INTEGER(N);
+	double *k = REAL(a1);
+	double *theta = REAL(a2);
+	double *x;
+	cudaMalloc((void**)&x, *n * sizeof(double));
+	//protect the R external pointer from finalizer
+	SEXP inc = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
+	R_RegisterCFinalizerEx(inc, _finalizer, TRUE);
+       UNPROTECT(1);
+	cuda_betapdf(R_ExternalPtrAddr(ina), R_ExternalPtrAddr(inc), *n, *k, *theta);
+	return(inc);
+} 
+
 //vector element-wise beta
 extern void cuda_beta(double *, double *, double *, int);
 SEXP vector_beta(SEXP ina, SEXP inb, SEXP N) 

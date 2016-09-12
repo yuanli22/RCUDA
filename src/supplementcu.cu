@@ -69,7 +69,7 @@ __global__ void cudasqrt(double *a, double *out, int n)
 	}
 }
 
-// the CUDA kernel for gamma
+// the CUDA kernel for gamma function
 __global__ void cudagamma(double *a, double *out, int n)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -78,7 +78,28 @@ __global__ void cudagamma(double *a, double *out, int n)
 	}
 }
 
-// the CUDA kernel for beta
+// the CUDA kernel for gamma pdf
+__global__ void cudagammapdf(double *a, double *out, int n, double k, double theta)
+{
+ 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < n) {
+		out[idx] = (1 / (tgamma(k) * pow(theta, k))) * pow(a[idx], 
+                         (k - 1)) * exp(-a[idx] / theta);
+	}
+}
+
+// the CUDA kernel for beta pdf
+__global__ void cudabetapdf(double *a, double *out, int n, double k, double theta)
+{
+ 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < n) {
+		out[idx] = pow(a[idx], (k-1)) * pow((1 - a[idx]), (theta - 1)) 
+                         / (tgamma(k) * tgamma(theta)
+                         / tgamma(k + theta));	
+	}
+}
+
+// the CUDA kernel for beta function
 __global__ void cudabeta(double *a, double *b, double *out, int n)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -239,6 +260,22 @@ extern "C" void cuda_gamma(double *a, double *c, int n)
 extern "C" void cuda_beta(double *a, double *b, double *c, int n)
 {
 	cudabeta<<<(n + M - 1) / M, M>>>(a, b, c, n);
+	return;
+}
+
+// CUDA vector gamma pdf function kernel invocation function
+extern "C" void cuda_gammapdf(double *a, double *c, int n, double k,
+                              double theta)
+{
+	cudagammapdf<<<(n + M - 1) / M, M>>>(a, c, n, k, theta);
+	return;
+}
+
+// CUDA vector beta pdf function kernel invocation function
+extern "C" void cuda_betapdf(double *a, double *c, int n, 
+                          double k, double theta)
+{
+	cudabetapdf<<<(n + M - 1) / M, M>>>(a, c, n, k, theta);
 	return;
 }
 
