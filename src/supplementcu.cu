@@ -118,6 +118,15 @@ __global__ void cudapower(double *a, double *out, int n, double alpha)
 	}
 }
 
+// the CUDA kernel for vector plus constant
+__global__ void cudavecincre(double *a, double *out, int n, double incre)
+{
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < n) {
+		out[idx] = a[idx] + incre;
+	}
+}
+
 // the CUDA kernel for normal pdf
 __global__ void cudanormdensity(double *a, double *out, int n,
                                 double mean, double sd)
@@ -283,6 +292,13 @@ extern "C" void cuda_betapdf(double *a, double *c, int n,
 extern "C" void cuda_power(double *a, double *c, int n, double alpha)
 {
 	cudapower<<<(n + M - 1) / M, M>>>(a, c, n, alpha);
+	return;
+}
+
+// CUDA vector plus constant invocation function
+extern "C" void cuda_vecincre(double *a, double *c, int n, double alpha)
+{
+	cudavecincre<<<(n + M - 1) / M, M>>>(a, c, n, alpha);
 	return;
 }
 

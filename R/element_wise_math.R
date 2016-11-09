@@ -165,6 +165,41 @@ powergpu <- function(input, alpha = 1)
   }
  
 
+#' vectincregpu
+#'
+#' This function computes the constant increment of given vector/matrix 
+#' by using self-defined CUDA function 
+#' @param input list consisting of R external GPU pointer and dimension 
+#' @param alpha increment factor
+#' @return powered vector/matrix, a list consisting of
+#' \itemize{
+#' \item{ptr: }{GPU pointer}
+#' \item{m: }{number of rows}
+#' \item{n: }{number of columns}
+#' }
+#' @seealso \code{\link{sqrtgpu}} 
+#' @export
+#' @examples
+#' a <- 1:4
+#' b <- 2
+#' a_gpu <- creategpu(a)
+#' powergpu(a_gpu, b) -> b_gpu
+#' gathergpu(b_gpu)
+
+vectincregpu <- function(input, alpha = 1) 
+{
+    checkGPU(input)
+    ext <- .Call("vector_vecincre", 
+                input$ptr,
+                as.integer(input[2]) * as.integer(input[3]),
+                as.numeric(alpha),
+                PACKAGE = "supplement"
+               )
+    ext <- GPUobject(ext, as.integer(input[2]), as.integer(input[3]))
+    return(ext)
+  }
+
+
 #' betagpu
 #'
 #' This function computes the beta function of the given vector/matrix

@@ -172,6 +172,23 @@ SEXP vector_power(SEXP ina, SEXP N, SEXP alpha)
 	return(inc);
 } 
 
+//vector element-wise vector plus constant
+extern void cuda_vecincre(double *, double *, int, double);
+SEXP vector_vecincre(SEXP ina, SEXP N, SEXP alpha) 
+{
+	int *n = INTEGER(N);
+	double *vectorincre = REAL(alpha);
+	double *x;
+	cudaMalloc((void**)&x, *n * sizeof(double));
+	//protect the R external pointer from finalizer
+	SEXP inc = PROTECT(R_MakeExternalPtr(x, R_NilValue, R_NilValue));
+	R_RegisterCFinalizerEx(inc, _finalizer, TRUE);
+       UNPROTECT(1);
+	cuda_vecincre(R_ExternalPtrAddr(ina), R_ExternalPtrAddr(inc), 
+       	    *n, *vectorincre);
+	return(inc);
+} 
+
 //vector normal pdf function
 extern void cuda_normal_density(double *, double *, int , double, double );
 SEXP cudanormaldensity(SEXP ina, SEXP N, SEXP m, SEXP s) 
