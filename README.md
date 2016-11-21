@@ -1,6 +1,6 @@
 # RCUDA
  
-This is an R GPU computing package via NVIDIA CUDA framework. It consists of wrappers of cuBLAS cuRAND libraries and self-defined CUDA functions. By defining gpu objective in R environment, we want to provide a high performance GPU solution of linear algebra and random number generators. Our package enables user to keep as much work on GPU side as possible that avoids unnecessary memory operation between CPU and GPU.
+This is an R GPU computing package via NVIDIA CUDA framework. It consists of wrappers of cuBLAS cuRAND libraries and self-defined CUDA functions. By defining gpu objective in R environment, we want to provide a high performance GPU solution to linear algebra and random number generators. Our package enables users to keep as much work on the GPU side as possible and avoid unnecessary data transfer between CPU and GPU.
  
 ## Prerequisities
 
@@ -16,7 +16,8 @@ This is an R GPU computing package via NVIDIA CUDA framework. It consists of wra
 
 
 ## Installing package
-To install RCUDA, user need to speficy the path for both R and CUDA includes and library.
+
+To install RCUDA, user needs to speficy the path for both R and CUDA includes and library.
 
 1. **R_HOME** specifies the R root path, for example 'R_HOME = /usr/bin/R' 
 
@@ -43,6 +44,7 @@ To install RCUDA, user need to speficy the path for both R and CUDA includes and
 
 
 ## Sample code
+
 Suppose we already installed and loaded the library in R, here is a sample code to perform GPU object creating and matrix-vector multiplication.
 ```{r} 
 creategpu(1:4, 2, 2) -> A     ##create a 2 by 2 matrix in GPU and assign it to object A 
