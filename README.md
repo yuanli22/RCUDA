@@ -44,7 +44,7 @@ To install RCUDA, user need to speficy the path for both R and CUDA includes and
 
 ## Sample code
 Suppose we already installed and loaded the library in R, here is a sample code to perform matrix-vector multiplication,
-```
+```{r} 
 creategpu(1:4, 2, 2) -> A     ##create a 2 by 2 matrix in GPU and assign it to object A
 
 creategpu(1:2) -> b       ##create a vector in GPU and assign it to object b
