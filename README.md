@@ -10,12 +10,14 @@ This is an R GPU computing package via NVIDIA CUDA framework. It consists of wra
 
 * CUDA toolkit version over 7.5 available at (https://developer.nvidia.com/cuda-downloads)
 
-* LINUX system with GNU 
+* LINUX system with GNU Compiler Collection GCC version over 4.8.4 available at https://gcc.gnu.org/
+
+* RCUDA is currently LINUX-only package
 
 
 ## Installing
-
-A step by step series of examples that tell you have to get a development env running
+To install RCUDA, user need to speficy the path for both R and CUDA includes and library.
+1. 
 
 
 
