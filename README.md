@@ -49,7 +49,8 @@ creategpu(1:4, 2, 2) -> A     ##create a 2 by 2 matrix in GPU and assign it to o
 
 creategpu(1:2) -> b       ##create a vector in GPU and assign it to object b
 
-mvgpu(A, b) -> c      ##compute the result A*b and store the result in GPU object c. Here mvgpu is the matrix-vector multiplication function in RCUDA
+mvgpu(A, b) -> c      ##compute the result A*b and store the result in GPU object c. 
+                        Here mvgpu is the matrix-vector multiplication function in RCUDA
 ```
 
 
