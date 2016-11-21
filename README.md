@@ -41,6 +41,15 @@ To install RCUDA, user need to speficy the path for both R and CUDA includes and
 
 * In R, run the test file (located at the 'tests' folder) by command 'source("yourpath/srcs/test.R")'
 
+
+## Sample code
+Suppose we already installed and loaded the library in R, here is a sample code to perform matrix-vector multiplication,
+```
+No language indicated, so no syntax highlighting. 
+But let's throw in a <b>tag</b>.
+```
+
+
 ## Available functions
 ### CUBLAS implementation progress
 
