@@ -1,5 +1,5 @@
 # RCUDA
-
+ 
 This is an R GPU computing package via NVIDIA CUDA framework. It consists of wrappers of cuBLAS cuRAND libraries and self-defined CUDA functions. By defining gpu objective in R environment, we want to provide a high performance GPU solution of linear algebra. Our package enables user to keep as much work on GPU side as possible that avoids unnecessary memory operation between CPU and GPU.
  
 ## Prerequisities
