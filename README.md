@@ -17,13 +17,24 @@ This is an R GPU computing package via NVIDIA CUDA framework. It consists of wra
 
 ## Installing
 To install RCUDA, user need to speficy the path for both R and CUDA includes and library.
-1. 2132132123
 
- 
+1. **R_HOME** specifies the R root path, for example 'R_HOME = /usr/bin/R' 
+2. **R_INC** specifies the R root path, for example 'R_INC := /usr/share/R/include' 
+3. **R_LIB** specifies the R root path, for example 'R_LIB := /usr/lib/' 
+4. **CUDA_HOME** specifies the R root path, for example 'CUDA_HOME := /usr/local/cuda-7.5'
+5. **CUDA_INC** specifies the R root path, for example 'CUDA_INC := $(CUDA_HOME)/include'
+6. **CUDA_LIB** specifies the R root path, for example 'CUDA_LIB := $(CUDA_HOME)/lib64' (depends on your system structure 32-bit or 64-bit)
+
+
 
 ## Running the tests
+* Build the package in linux by command 'R CMD build RCUDA' to get the file **RCUDA_1.0.tar.gz**
 
-Explain how to run the automated tests for this system
+* In R, compile your package by command 'install.packages("yourpath/RCUDA_1.0.tar.gz", repos = NULL)'
+
+* In R, load the library by command 'library(RCUDA)'
+
+* In R, run the test file (located at the 'tests' folder) by command 'source("yourpath/srcs/test.R")'
 
 ## Available functions
 ### CUBLAS implementation progress
