@@ -110,11 +110,11 @@ CUBLAS functions:
 * [ ] tpsv
 * [x] trmv (in julia/blas.jl)
 * [x] trsv (in julia/blas.jl)
-* [x] hemv (in julia/blas.jl)
-* [x] hbmv
+* [ ] hemv (in julia/blas.jl)
+* [ ] hbmv
 * [ ] hpmv
-* [x] her (in julia/blas.jl)
-* [x] her2
+* [ ] her (in julia/blas.jl)
+* [ ] her2
 * [ ] hpr
 * [ ] hpr2
 
@@ -131,9 +131,9 @@ CUBLAS functions:
 * [x] trmm (in julia/blas.jl)
 * [x] trsm (in julia/blas.jl)
 * [x] trsmBatched
-* [x] hemm
-* [x] herk (in julia/blas.jl)
-* [x] her2k (in julia/blas.jl)
+* [ ] hemm
+* [ ] herk (in julia/blas.jl)
+* [ ] her2k (in julia/blas.jl)
 * [ ] herkx
 
 #### BLAS-like extensions
