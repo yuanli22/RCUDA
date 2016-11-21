@@ -150,19 +150,22 @@ CUBLAS functions:
 
 ### Random number generators
 
-* [x] Gaussian
-* [x] Log-Gaussian
-* [x] Poisson
-* [x] Uniform
-* [x] Gamma
-* [x] Beta
+*  Gaussian
+*  Log-Gaussian
+*  Poisson
+*  Uniform
+*  Gamma
+*  Beta
 
 
 ### High level statistical functions
 
-* [x] Mean
-* [x] Variance
-* [x] Covariance
+*  sample Mean
+*  sample Variance
+*  Covariance
+*  Gaussian density function
+*  Gamma density function
+*  Beta density function
  
 
 
