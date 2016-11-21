@@ -1,15 +1,15 @@
 Package: RCUDA
 Type: Package
 Title: GPU Enabled BLAS, LAPACK, Statistical Functions and Random Number Generators
-Version: 0.1
-Date: 2016-1-07
+Version: 1.0
+Date: 2016-11-07
 Author: Yuan Li, Hua Zhou
 Maintainer: Yuan Li <yli16@ncsu.edu>
 Description: Provides GPU-accelerated algebra and random number generating functions by wrapping CUDA library. It also includes some self-defined high level statistical functions based on NVIDIA CUDA framework. 
 License: CPL
-Depends: R (>= 3.0.0)
+Depends: R (>= 3.2.0)
 NeedsCompilation: yes
-SystemRequirements: Nvidia's CUDA toolkit (>= release 5.5); Linux
+SystemRequirements: Nvidia's CUDA toolkit (>= release 7.5); Linux
         operating system; GNU make.
 URL: https://github.com/yuanli22/RCUDA
 RoxygenNote: 5.0.1
