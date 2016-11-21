@@ -17,9 +17,9 @@ This is an R GPU computing package via NVIDIA CUDA framework. It consists of wra
 
 ## Installing
 To install RCUDA, user need to speficy the path for both R and CUDA includes and library.
-1. 
+1. 2132132123
 
-
+ 
 
 ## Running the tests
 
