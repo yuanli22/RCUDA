@@ -20,15 +20,15 @@ To install RCUDA, user need to speficy the path for both R and CUDA includes and
 
 1. **R_HOME** specifies the R root path, for example 'R_HOME = /usr/bin/R' 
 
-2. **R_INC** specifies the R root path, for example 'R_INC := /usr/share/R/include'
+2. **R_INC** specifies the R include path, for example 'R_INC := /usr/share/R/include'
 
-3. **R_LIB** specifies the R root path, for example 'R_LIB := /usr/lib/' 
+3. **R_LIB** specifies the R library path, for example 'R_LIB := /usr/lib/' 
 
-4. **CUDA_HOME** specifies the R root path, for example 'CUDA_HOME := /usr/local/cuda-7.5'
+4. **CUDA_HOME** specifies the CUDA root path, for example 'CUDA_HOME := /usr/local/cuda-7.5'
 
-5. **CUDA_INC** specifies the R root path, for example 'CUDA_INC := $(CUDA_HOME)/include'
+5. **CUDA_INC** specifies the CUDA include path, for example 'CUDA_INC := $(CUDA_HOME)/include'
 
-6. **CUDA_LIB** specifies the R root path, for example 'CUDA_LIB := $(CUDA_HOME)/lib64' (depends on your system structure 32-bit or 64-bit)
+6. **CUDA_LIB** specifies the CUDA library path, for example 'CUDA_LIB := $(CUDA_HOME)/lib64' (depends on your system structure 32-bit or 64-bit)
 
  
 
@@ -43,7 +43,7 @@ To install RCUDA, user need to speficy the path for both R and CUDA includes and
 
 
 ## Sample code
-Suppose we already installed and loaded the library in R, here is a sample code to perform matrix-vector multiplication,
+Suppose we already installed and loaded the library in R, here is a sample code to perform GPU object creating and matrix-vector multiplication.
 ```{r} 
 creategpu(1:4, 2, 2) -> A     ##create a 2 by 2 matrix in GPU and assign it to object A 
                               ##function creategpu second and third input is the row and column numbers of matrix
