@@ -68,14 +68,14 @@ CUBLAS functions:
 * [x] asum
 * [x] axpy
 * [x] copy
-* [x] dot, dotc, dotu
+* [x] dot
 * [x] nrm2
-* [ ] rot (not implemented in julia blas.jl)
-* [ ] rotg (not implemented in julia blas.jl)
-* [ ] rotm (not implemented in julia blas.jl)
-* [ ] rotmg (not implemented in julia blas.jl)
+* [ ] rot  
+* [ ] rotg  
+* [ ] rotm 
+* [ ] rotmg  
 * [x] scal
-* [ ] swap (not implemented in julia blas.jl)
+* [ ] swap  
 
 #### Level 2
 
@@ -94,26 +94,26 @@ Key:
 
 CUBLAS functions:
 
-* [x] gbmv (in julia/blas.jl)
-* [x] gemv (in julia/blas.jl)
-* [x] ger (in julia/blas.jl)
-* [x] sbmv (in julia/blas.jl)
+* [x] gbmv  
+* [x] gemv  
+* [x] ger  
+* [x] sbmv  
 * [ ] spmv
 * [ ] spr
 * [ ] spr2
-* [x] symv (in julia/blas.jl)
-* [x] syr (in julia/blas.jl)
+* [x] symv  
+* [x] syr 
 * [ ] syr2
 * [x] tbmv
 * [x] tbsv
 * [ ] tpmv
 * [ ] tpsv
-* [x] trmv (in julia/blas.jl)
-* [x] trsv (in julia/blas.jl)
-* [ ] hemv (in julia/blas.jl)
+* [x] trmv  
+* [x] trsv  
+* [ ] hemv  
 * [ ] hbmv
 * [ ] hpmv
-* [ ] her (in julia/blas.jl)
+* [ ] her 
 * [ ] her2
 * [ ] hpr
 * [ ] hpr2
@@ -122,18 +122,18 @@ CUBLAS functions:
 
 CUBLAS functions:
 
-* [x] gemm (in julia/blas.jl)
+* [x] gemm  
 * [x] gemmBatched
-* [x] symm (in julia/blas.jl)
-* [x] syrk (in julia/blas.jl)
-* [x] syr2k (in julia/blas.jl)
+* [x] symm  
+* [x] syrk  
+* [x] syr2k 
 * [ ] syrkx
-* [x] trmm (in julia/blas.jl)
-* [x] trsm (in julia/blas.jl)
+* [x] trmm  
+* [x] trsm  
 * [x] trsmBatched
 * [ ] hemm
-* [ ] herk (in julia/blas.jl)
-* [ ] her2k (in julia/blas.jl)
+* [ ] herk  
+* [ ] her2k  
 * [ ] herkx
 
 #### BLAS-like extensions
