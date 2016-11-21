@@ -58,15 +58,9 @@ gathergpu(c) -> result       ##transfer the outcome from c (GPU object) to resul
 
 
 ## Available functions
-### CUBLAS implementation progress
+### BLAS implementation progress
 
-The following sections list the CUBLAS functions shown on the CUBLAS
-documentation page:
-
-http://docs.nvidia.com/cuda/cublas/index.html
-
-### Level 1 (13 functions)
-
+#### Level 1
 CUBLAS functions:
 
 * [x] amax
@@ -83,7 +77,7 @@ CUBLAS functions:
 * [x] scal
 * [ ] swap (not implemented in julia blas.jl)
 
-### Level 2
+#### Level 2
 
 Key:
 * `ge`: general
@@ -124,7 +118,7 @@ CUBLAS functions:
 * [ ] hpr
 * [ ] hpr2
 
-### Level 3
+#### Level 3
 
 CUBLAS functions:
 
@@ -142,7 +136,7 @@ CUBLAS functions:
 * [x] her2k (in julia/blas.jl)
 * [ ] herkx
 
-### BLAS-like extensions
+#### BLAS-like extensions
 
 * [x] geam
 * [x] dgmm
@@ -152,6 +146,25 @@ CUBLAS functions:
 * [x] gelsBatched
 * [ ] tpttr
 * [ ] trttp
+
+
+### Random number generators
+
+* [x] Gaussian
+* [x] Log-Gaussian
+* [x] Poisson
+* [x] Uniform
+* [x] Gamma
+* [x] Beta
+
+
+### High level statistical functions
+
+* [x] Mean
+* [x] Variance
+* [x] Covariance
+ 
+
 
 
 ## Authors
