@@ -30,7 +30,7 @@ To install RCUDA, user need to speficy the path for both R and CUDA includes and
 
 6. **CUDA_LIB** specifies the R root path, for example 'CUDA_LIB := $(CUDA_HOME)/lib64' (depends on your system structure 32-bit or 64-bit)
 
-
+ 
 
 ## Running the tests
 * Build the package in linux by command 'R CMD build RCUDA' to get the file **RCUDA_1.0.tar.gz**
